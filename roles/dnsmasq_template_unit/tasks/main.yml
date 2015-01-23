@@ -1,0 +1,3 @@
+- file: path=/etc/dnsmasq state=directory
+- copy: src=dnsmasq@.service dest=/etc/systemd/system/dnsmasq@.service
+

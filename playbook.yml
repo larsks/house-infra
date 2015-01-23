@@ -1,0 +1,3 @@
+- hosts: arcadia.house
+  roles:
+    - storage_network_host

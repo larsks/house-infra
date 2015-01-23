@@ -1,0 +1,9 @@
+[Unit]
+Description=DNS caching server.
+After=network.target
+
+[Service]
+ExecStart=/usr/sbin/dnsmasq -k --conf-file=/etc/dnsmasq/%i.conf
+
+[Install]
+WantedBy=multi-user.target

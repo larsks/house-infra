@@ -1,0 +1,3 @@
+dependencies:
+  - role: dnsmasq_template_unit
+

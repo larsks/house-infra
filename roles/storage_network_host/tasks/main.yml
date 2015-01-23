@@ -1,0 +1,5 @@
+- copy: src=storage.conf dest=/etc/dnsmasq/storage.conf
+  notify: restart dnsmasq@storage
+- service: name=dnsmasq@storage state=running enabled=true
+- copy: src=ifcfg-br1 dest=/etc/sysconfig/network-scripts/ifcfg-br1
+  notify: activate br1

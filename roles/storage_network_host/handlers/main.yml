@@ -1,0 +1,5 @@
+- name: restart dnsmasq@storage
+  service: name=dnsmasq@storage state=restarted
+- name: activate br1
+  command: ifup br1
+  ignore_errors: true
