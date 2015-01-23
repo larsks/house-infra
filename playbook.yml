@@ -1,8 +1,13 @@
 - hosts: arcadia.house
   roles:
-    - storage_network_host
+    - role: storage_network_host
+      tags: [ storage ]
     - role: docker
       tags: [ docker ]
+    - role: kubernetes
+      tags: [ kubernetes ]
+    - role: music_server
+      tags: [ music ]
   tasks:
     - copy: src=files/iptables dest=/etc/sysconfig/iptables
     - copy: src=files/resolv.conf dest=/etc/resolv.conf
