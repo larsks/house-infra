@@ -1,3 +1,8 @@
+- name: install docker package(s)
+  yum: name=docker-io state=latest
+  notify: restart docker
+- name: activate docker service
+  service: name=docker state=running enabled=true
 - name: install docker storage configuration
   copy: src=docker-storage dest=/etc/sysconfig/docker-storage
   notify: restart docker
