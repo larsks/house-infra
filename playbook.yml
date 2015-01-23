@@ -1,3 +1,14 @@
 - hosts: arcadia.house
   roles:
     - storage_network_host
+    - role: docker
+      tags: [ docker ]
+  tasks:
+    - copy: src=files/iptables dest=/etc/sysconfig/iptables
+    - copy: src=files/resolv.conf dest=/etc/resolv.conf
+  handlers:
+    - name: reload iptables
+      service: name=iptables state=restarted
+      notify: reload libvirt networks
+    - name: reload libvirt networks
+      shell: "virsh net-destroy default; virsh net-start default"
