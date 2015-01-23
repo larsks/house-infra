@@ -1,0 +1,32 @@
+kind: Pod
+id: squeezebox
+apiVersion: v1beta1
+labels:
+  name: squeezebox
+desiredState:
+  manifest:
+    version: v1beta1
+    id: squeezebox
+    containers:
+      - name: squeezebox
+        image: larsks/logitech-media-server
+        ports:
+          - containerPort: 9000
+          - containerPort: 9090
+          - containerPort: 3483
+        volumeMounts:
+          - mountPath: "/srv/music"
+            name: "music"
+          - mountPath: "/srv/squeezebox"
+            name: "squeezebox"
+    volumes:
+      - name: "music"
+        source:
+          hostDir:
+            path: /data/music/iTunes
+      - name: "squeezebox"
+        source:
+          hostDir:
+            path: /data/squeezebox
+
+

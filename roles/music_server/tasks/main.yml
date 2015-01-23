@@ -1,0 +1,5 @@
+- name: install kubernetes configs
+  copy: src={{item}} dest=/etc/kubernetes/yaml/{{item}}
+  with_items:
+    - squeezebox-pod.yaml
+    - squeezebox-service.yaml
