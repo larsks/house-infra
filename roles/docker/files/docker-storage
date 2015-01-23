@@ -1,0 +1,2 @@
+DOCKER_STORAGE_OPTIONS="--storage-opt dm.fs=xfs --storage-opt dm.metadatadev=/dev/tank/docker-metadata --storage-opt dm.datadev=/dev/tank/docker-data"
+

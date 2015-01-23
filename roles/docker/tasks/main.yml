@@ -1,0 +1,28 @@
+- name: install docker storage configuration
+  copy: src=docker-storage dest=/etc/sysconfig/docker-storage
+  notify: restart docker
+- name: install docker systemd units
+  copy: src={{item}} dest=/etc/systemd/system/{{item}}
+  with_items:
+    - docker-container-cleanup.service
+    - docker-container-cleanup.timer
+    - docker-image-cleanup.service
+    - docker-image-cleanup.timer
+  notify: reload systemd
+- name: enable docker maintenance services
+  command: systemctl enable {{item}}
+  with_items:
+    - docker-container-cleanup.timer
+    - docker-image-cleanup.timer
+- name: start docker maintenance services
+  command: systemctl start {{item}}
+  with_items:
+    - docker-container-cleanup.timer
+    - docker-image-cleanup.timer
+- name: install docker utility scripts
+  copy: src={{item}} dest=/usr/bin/{{item}} mode=0755
+  with_items:
+    - docker-container-cleanup
+    - docker-image-cleanup
+- service: name=docker state=running enabled=true
+

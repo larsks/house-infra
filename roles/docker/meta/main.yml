@@ -1,0 +1,11 @@
+dependencies:
+  - role: lvm_lv
+    vgname: tank
+    lvname: docker-data
+    lvsize: 80G
+  - role: lvm_lv
+    vgname: tank
+    lvname: docker-metadata
+    lvsize: 8G
+  - role: systemd
+
