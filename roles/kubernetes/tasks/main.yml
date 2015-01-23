@@ -1,0 +1,17 @@
+- name: install kubernetes package(s)
+  yum: name=kubernetes state=latest
+  notify: restart kubernetes
+- name: activate kubernetes service(s)
+  service: name={{item}} state=running enabled=true
+  with_items:
+    - etcd
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+    - kube-proxy
+    - kubelet
+- name: create directory for kubernetes yaml files
+  file: path=/etc/kubernetes/yaml state=directory
+- name: create parent for hostdir volume mounts
+  file: path=/data state=directory
+
