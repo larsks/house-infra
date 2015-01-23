@@ -1,0 +1,7 @@
+- name: test if lv {{vgname}}/{{lvname}} exists
+  command: lvs {{vgname}}/{{lvname}}
+  ignore_errors: true
+  register: lv_exists
+- name: create lv {{vgname}}/{{lvname}}
+  command: lvcreate -L {{lvsize}} -n {{lvname}} {{vgname}}
+  when: lv_exists|failed
