@@ -1,0 +1,11 @@
+- name: test if pods exist
+  command: kubectl get pod {{item.id}}
+  ignore_errors: true
+  register: pod_results
+  with_items: pods
+- name: create pods
+  command: kubectl create -f /etc/kubernetes/yaml/{{item.item.config}}
+  when: item|failed
+  with_items: pod_results.results
+
+

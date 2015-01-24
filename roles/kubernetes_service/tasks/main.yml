@@ -1,0 +1,9 @@
+- name: test if services exist
+  command: kubectl get service {{item.id}}
+  ignore_errors: true
+  register: service_results
+  with_items: services
+- name: create services
+  command: kubectl create -f /etc/kubernetes/yaml/{{item.item.config}}
+  when: item|failed
+  with_items: service_results.results
