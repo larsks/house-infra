@@ -1,8 +1,9 @@
 kind: Service
 apiVersion: v1beta1
-id: squeezebox
-port: 80
+id: squeezebox-player
+port: 9000
 selector:
   name: squeezebox
 containerPort: 9000
-publicip: 192.168.1.40
+publicIps:
+  - 192.168.1.40

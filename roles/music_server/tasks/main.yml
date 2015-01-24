@@ -2,4 +2,10 @@
   copy: src={{item}} dest=/etc/kubernetes/yaml/{{item}}
   with_items:
     - squeezebox-pod.yaml
-    - squeezebox-service.yaml
+    - squeezebox-web-service.yaml
+    - squeezebox-player-service.yaml
+    - squeezebox-slimproto-service.yaml
+    - squeezebox-cli-service.yaml
+- name: mount music data
+  mount: fstype=ext4 name=/data/music src=/dev/tank/music state=mounted
+

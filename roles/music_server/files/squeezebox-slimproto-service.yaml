@@ -1,0 +1,9 @@
+kind: Service
+apiVersion: v1beta1
+id: squeezebox-slimproto
+port: 3483
+selector:
+  name: squeezebox
+containerPort: 3483
+publicIps:
+  - 192.168.1.40

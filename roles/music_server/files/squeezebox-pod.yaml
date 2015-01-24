@@ -15,18 +15,24 @@ desiredState:
           - containerPort: 9090
           - containerPort: 3483
         volumeMounts:
-          - mountPath: "/srv/music"
-            name: "music"
+          - mountPath: "/srv/itunes"
+            name: "itunes"
+          - mountPath: "/srv/other"
+            name: "other"
           - mountPath: "/srv/squeezebox"
             name: "squeezebox"
     volumes:
-      - name: "music"
+      - name: "itunes"
         source:
           hostDir:
-            path: /data/music/iTunes
+            path: /data/music/itunes
+      - name: "other"
+        source:
+          hostDir:
+            path: /data/music/other
       - name: "squeezebox"
         source:
           hostDir:
-            path: /data/squeezebox
+            path: /data/music/squeezebox
 
 

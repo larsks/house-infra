@@ -1,0 +1,9 @@
+kind: Service
+apiVersion: v1beta1
+id: squeezebox-cli
+port: 9090
+selector:
+  name: squeezebox
+containerPort: 9090
+publicIps:
+  - 192.168.1.40
