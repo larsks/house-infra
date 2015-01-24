@@ -1,19 +1,47 @@
 - hosts: arcadia.house
-  roles:
-    - role: storage_network_host
-      tags: [ storage ]
-    - role: docker
-      tags: [ docker ]
-    - role: kubernetes
-      tags: [ kubernetes ]
-    - role: music_server
-      tags: [ music ]
+  tags:
+    - network
   tasks:
     - copy: src=files/iptables dest=/etc/sysconfig/iptables
     - copy: src=files/resolv.conf dest=/etc/resolv.conf
+    - copy: src=files/ifcfg-{{item}}
+            dest=/etc/sysconfig/network-scripts/ifcfg-{{item}}
+      with_items:
+        - br0
+        - br1
   handlers:
     - name: reload iptables
       service: name=iptables state=restarted
       notify: reload libvirt networks
     - name: reload libvirt networks
       shell: "virsh net-destroy default; virsh net-start default"
+
+- hosts: arcadia.house
+  tags:
+    - docker
+    - kubernetes
+  roles:
+    - role: storage_network_host
+    - role: docker
+    - role: kubernetes
+
+- hosts: arcadia.house
+  tags:
+    - music
+  roles:
+    - role: music_server
+    - role: kubernetes_service
+      services:
+        - id: squeezebox-web
+          config: squeezebox-web-service.yaml
+        - id: squeezebox-player
+          config: squeezebox-player-service.yaml
+        - id: squeezebox-cli
+          config: squeezebox-cli-service.yaml
+        - id: squeezebox-slimproto
+          config: squeezebox-slimproto-service.yaml
+    - role: kubernetes_pod
+      pods:
+        - id: squeezebox
+          config: squeezebox-pod.yaml
+
