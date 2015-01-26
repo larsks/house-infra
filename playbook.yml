@@ -8,6 +8,20 @@
 
 - hosts: arcadia.house
   tags:
+    - sysctl
+    - sysconfig
+  tasks:
+    - name: install sysctl files
+      copy: src=files/{{item}} dest=/etc/sysctl.d/{{item}}
+      with_items:
+        - inotify.conf
+      notify: reload sysctl
+  handlers:
+    - name: reload sysctl
+      service: name=systemd-sysctl state=restarted
+
+- hosts: arcadia.house
+  tags:
     - filesystems
     - sysconfig
   tasks:
