@@ -6,6 +6,3 @@
     - squeezebox-player-service.yaml
     - squeezebox-slimproto-service.yaml
     - squeezebox-cli-service.yaml
-- name: mount music data
-  mount: fstype=ext4 name=/data/music src=/dev/tank/music state=mounted
-
