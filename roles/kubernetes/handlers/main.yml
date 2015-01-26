@@ -6,3 +6,5 @@
     - kube-scheduler
     - kube-proxy
     - kubelet
+- name: restart kube-ip-manager
+  service: name=kube-ip-manager state=restarted

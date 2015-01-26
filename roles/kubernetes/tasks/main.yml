@@ -1,6 +1,21 @@
 - name: install kubernetes package(s)
   yum: name=kubernetes state=latest
   notify: restart kubernetes
+- name: fetch kube-ip-manager repository
+  git: repo=http://github.com/larsks/kube-ip-manager.git
+        dest=/root/kube-ip-manager
+  register: update_kube_ip_manager
+- name: install kube-ip-manager
+  command: install -m 755 kube-ip-manager.py /usr/bin/kube-ip-manager
+  args:
+    chdir: /root/kube-ip-manager
+  when: update_kube_ip_manager|changed
+  notify: restart kube-ip-manager
+- name: install kube-ip-manager systemd unit
+  copy: src=kube-ip-manager.service
+        dest=/etc/systemd/system/kube-ip-manager.service
+  notify: reload systemd
+- meta: flush_handlers
 - name: activate kubernetes service(s)
   service: name={{item}} state=running enabled=true
   with_items:
@@ -10,6 +25,7 @@
     - kube-scheduler
     - kube-proxy
     - kubelet
+    - kube-ip-manager
 - name: create directory for kubernetes yaml files
   file: path=/etc/kubernetes/yaml state=directory
 - name: create parent for hostdir volume mounts

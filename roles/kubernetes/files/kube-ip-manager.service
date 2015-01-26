@@ -1,0 +1,12 @@
+[Unit]
+Description=Manage kubernetes public ip addresses
+Requires=kube-apiserver.service
+After=kube-apiserver.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/kube-ip-manager -i br0
+
+[Install]
+WantedBy=multi-user.target
+
