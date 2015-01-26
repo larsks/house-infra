@@ -1,3 +1,13 @@
+*mangle
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+:KUBE-PUBLIC - [0:0]
+-A PREROUTING -j KUBE-PUBLIC
+COMMIT
+
 *nat
 :PREROUTING ACCEPT [0:0]
 :INPUT ACCEPT [0:0]
@@ -10,20 +20,14 @@ COMMIT
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :storage-input - [0:0]
-:music-input - [0:0]
 
 -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -m mark --mark 1 -j ACCEPT
 -A INPUT -p icmp -j ACCEPT
 -A INPUT -i lo -j ACCEPT
 -A INPUT -i br1 -j storage-input
 -A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
--A INPUT -d 192.168.1.40 -j music-input
 -A INPUT -j REJECT --reject-with icmp-host-prohibited
-
--A music-input -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
--A music-input -p tcp -m state --state NEW -m tcp --dport 9000 -j ACCEPT
--A music-input -p tcp -m state --state NEW -m tcp --dport 9090 -j ACCEPT
--A music-input -p tcp -m state --state NEW -m tcp --dport 3483 -j ACCEPT
 
 -A storage-input -p udp --dport bootps -j ACCEPT
 -A storage-input -p udp --dport domain -j ACCEPT
