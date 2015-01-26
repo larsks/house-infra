@@ -1,6 +1,31 @@
 - hosts: arcadia.house
   tags:
+    - packages
+  tasks:
+    - yum: name={{item}} state=latest
+      with_items:
+        - git
+
+- hosts: arcadia.house
+  tags:
+    - filesystems
+    - sysconfig
+  tasks:
+    - name: mount music data
+      mount: fstype=ext4 name=/data/music src=/dev/tank/music state=mounted
+            opts=rw,relatime
+    - name: mount photos data
+      mount: fstype=ext4 name=/data/photos src=/dev/tank/photos state=mounted
+            opts=rw,relatime
+    - name: mount backup data
+      mount: fstype=ext4 name=/data/backup src=/dev/tank/backup state=mounted
+            opts=rw,relatime
+
+- hosts: arcadia.house
+  tags:
     - network
+  roles:
+    - role: storage_network_host
   tasks:
     - copy: src=files/iptables dest=/etc/sysconfig/iptables
     - copy: src=files/resolv.conf dest=/etc/resolv.conf
@@ -19,10 +44,13 @@
 - hosts: arcadia.house
   tags:
     - docker
+  roles:
+    - role: docker
+
+- hosts: arcadia.house
+  tags:
     - kubernetes
   roles:
-    - role: storage_network_host
-    - role: docker
     - role: kubernetes
 
 - hosts: arcadia.house
