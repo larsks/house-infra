@@ -45,3 +45,19 @@
         - id: squeezebox
           config: squeezebox-pod.yaml
 
+- hosts: arcadia.house
+  tags:
+    - backup
+  roles:
+    - role: backup_server
+    - role: kubernetes_service
+      services:
+        - id: crashplan-backups
+          config: crashplan-backups-service.yaml
+        - id: crashplan-mgmt
+          config: crashplan-mgmt-service.yaml
+    - role: kubernetes_pod
+      pods:
+        - id: crashplan
+          config: crashplan-pod.yaml
+
