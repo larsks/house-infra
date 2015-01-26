@@ -1,0 +1,7 @@
+- name: install kubernetes configs
+  copy: src={{item}} dest=/etc/kubernetes/yaml/{{item}}
+  with_items:
+    - crashplan-pod.yaml
+    - crashplan-backups-service.yaml
+    - crashplan-mgmt-service.yaml
+

@@ -1,0 +1,42 @@
+kind: Pod
+id: crashplan
+apiVersion: v1beta1
+labels:
+  name: crashplan
+desiredState:
+  manifest:
+    version: v1beta1
+    id: crashplan
+    containers:
+      - name: crashplan
+        image: larsks/crashplan
+        ports:
+          - containerPort: 4242
+          - containerPort: 4243
+        volumeMounts:
+          - mountPath: "/crashplan/conf"
+            name: "crashplan"
+          - mountPath: "/srv/crashplan"
+            name: "archives"
+          - mountPath: "/srv/music"
+            name: "music"
+          - mountPath: "/srv/photos"
+            name: "photos"
+    volumes:
+      - name: "crashplan"
+        source:
+          hostDir:
+            path: /data/backup/crashplan/conf
+      - name: "archives"
+        source:
+          hostDir:
+            path: /data/backup/crashplan/archives
+      - name: "music"
+        source:
+          hostDir:
+            path: /data/music
+      - name: "photos"
+        source:
+          hostDir:
+            path: /data/photos
+
