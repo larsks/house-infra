@@ -1,17 +1,20 @@
 - name: install kubernetes package(s)
-  yum: name=kubernetes state=latest
+  yum: name={{item}} state=latest
+  with_items:
+    - kubernetes
+    - python-netaddr
+    - python-requests
   notify: restart kubernetes
 - name: fetch kube-ip-manager repository
   git: repo=http://github.com/larsks/kube-ip-manager.git
         dest=/root/kube-ip-manager
         update=yes
-        version=master
+        version=cluster
   register: update_kube_ip_manager
 - name: install kube-ip-manager
-  command: install -m 755 kube-ip-manager.py /usr/bin/kube-ip-manager
+  command: python setup.py install
   args:
     chdir: /root/kube-ip-manager
-  when: update_kube_ip_manager|changed
   notify: restart kube-ip-manager
 - name: install kube-ip-manager systemd unit
   copy: src=kube-ip-manager.service

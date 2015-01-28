@@ -5,7 +5,7 @@ After=kube-apiserver.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/kube-ip-manager -i br0
+ExecStart=/usr/bin/kiwi -v -i br0 -r 192.168.1.32/28
 
 [Install]
 WantedBy=multi-user.target
