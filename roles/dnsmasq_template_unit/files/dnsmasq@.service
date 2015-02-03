@@ -3,7 +3,7 @@ Description=DNS caching server.
 After=network.target
 
 [Service]
-ExecStart=/usr/sbin/dnsmasq -k --conf-file=/etc/dnsmasq/%i.conf
+ExecStart=/usr/sbin/dnsmasq -k --conf-file=/etc/dnsmasq/%i.conf -l /var/lib/dnsmasq/%i.leases
 
 [Install]
 WantedBy=multi-user.target
