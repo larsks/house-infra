@@ -1,0 +1,23 @@
+- name: install collectd
+  yum: name={{item}} state=installed
+  with_items:
+    - collectd
+    - collectd-lvm
+    - collectd-sensors
+    - collectd-netlink
+- name: activate collectd
+  service: name=collectd state=running enabled=true
+- name: install collectd.conf
+  copy: src=collectd.conf dest=/etc/collectd.conf
+        owner=root group=root
+  notify: restart collectd
+- name: install collectd plugin configurations
+  copy: src=collectd.d/{{item}} dest=/etc/collectd.d/{{item}}
+  with_items:
+    - ethstat.conf
+    - interface.conf
+    - sensors.conf
+    - swap.conf
+    - unixsock.conf
+    - write_graphite.conf
+  notify: restart collectd

@@ -13,6 +13,9 @@ desiredState:
         ports:
           - containerPort: 4242
           - containerPort: 4243
+        env:
+          - name: TZ
+            value: EST5EDT
         volumeMounts:
           - mountPath: "/crashplan/conf"
             name: "crashplan"

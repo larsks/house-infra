@@ -14,6 +14,9 @@ desiredState:
           - containerPort: 9000
           - containerPort: 9090
           - containerPort: 3483
+        env:
+          - name: TZ
+            value: EST5EDT
         volumeMounts:
           - mountPath: "/srv/itunes"
             name: "itunes"

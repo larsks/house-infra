@@ -34,6 +34,9 @@
     - name: mount backup data
       mount: fstype=ext4 name=/data/backup src=/dev/tank/backup state=mounted
             opts=rw,relatime
+    - name: mount graphite data
+      mount: fstype=ext4 name=/data/graphite src=/dev/tank/graphite state=mounted
+            opts=rw,relatime
 
 - hosts: arcadia.house
   tags:
@@ -66,6 +69,23 @@
     - kubernetes
   roles:
     - role: kubernetes
+
+- hosts: arcadia.house
+  tags:
+    - stats
+  roles:
+    - role: collectd
+    - role: graphite
+    - role: kubernetes_service
+      services:
+        - id: graphite-web
+          config: graphite-web-service.yaml
+        - id: graphite-carbon
+          config: graphite-carbon-service.yaml
+    - role: kubernetes_pod
+      pods:
+        - id: graphite
+          config: graphite-pod.yaml
 
 - hosts: arcadia.house
   tags:

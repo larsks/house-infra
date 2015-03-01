@@ -1,0 +1,45 @@
+kind: Pod
+id: graphite
+apiVersion: v1beta1
+labels:
+  name: graphite
+desiredState:
+  manifest:
+    version: v1beta1
+    id: graphite
+    containers:
+      - name: graphite
+        image: larsks/graphite
+        ports:
+          - containerPort: 80
+        volumeMounts:
+          - mountPath: "/var/lib/graphite-web"
+            name: "graphite-storage"
+          - mountPath: "/var/lib/carbon"
+            name: "carbon-storage"
+        env:
+          - name: TZ
+            value: EST5EDT
+          - name: GRAPHITE_TIME_ZONE
+            value: US/Eastern
+      - name: carbon-cache
+        image: larsks/carbon-cache
+        ports:
+          - containerPort: 2003
+          - containerPort: 2004
+          - containerPort: 7002
+        env:
+          - name: TZ
+            value: EST5EDT
+        volumeMounts:
+          - mountPath: "/var/lib/carbon"
+            name: "carbon-storage"
+    volumes:
+      - name: "graphite-storage"
+        source:
+          hostDir:
+            path: /data/graphite/graphite
+      - name: "carbon-storage"
+        source:
+          hostDir:
+            path: /data/graphite/carbon

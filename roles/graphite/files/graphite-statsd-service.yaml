@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1beta1
+id: graphite-statsd
+port: 8125
+selector:
+  name: graphite
+containerPort: 8125
+protocol: udp
+publicIps:
+  - 192.168.1.39

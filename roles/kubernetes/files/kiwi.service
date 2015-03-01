@@ -1,14 +1,12 @@
 [Unit]
 Description=Manage kubernetes public ip addresses
-Requires=kube-apiserver.service
-After=kube-apiserver.service
+Requires=kube-apiserver.service docker.service
+After=kube-apiserver.service docker.service
 
 [Service]
-Type=oneshot
-RemainAfterExit=true
 ExecStartPre=-/bin/docker rm -f %n
-ExecStart=/bin/docker run -d --name=%n --net=host --privileged larsks/kiwi -v -i br0 -r 192.168.1.32/28
-ExecStop=/bin/docker stop %n
+ExecStart=/bin/docker run --name=%n --restart=always --net=host --privileged larsks/kiwi -v -i br0 -r 192.168.1.32/28
+ExecStop=-/bin/docker stop %n
 
 [Install]
 WantedBy=multi-user.target
