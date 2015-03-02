@@ -1,3 +1,8 @@
+- name: ensure data directories exist
+  file: path=/data/graphite/{{item}} state=directory
+  with_items:
+    - carbon
+    - graphite
 - name: install kubernetes configs
   copy: src={{item}} dest=/etc/kubernetes/yaml/{{item}}
   with_items:
