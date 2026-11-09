@@ -5,6 +5,7 @@
     config: |
       interface {{ interface.name }}
       switchport mode {{ interface.config.portmode }}
+  notify: Save configuration
 
 - name: "{{ interface.name }}: Set port description"
   when: >-
@@ -13,6 +14,7 @@
     config: |
       interface {{ interface.name }}
       description "{{ interface.config.description }}"
+  notify: Save configuration
 
 - name: "{{ interface.name }}: Set port admin state"
   when: >-
@@ -21,6 +23,7 @@
     config: |
       interface {{ interface.name }}
       {{ 'no shutdown' if interface.config.enabled else 'shutdown' }}
+  notify: Save configuration
 
 - name: "{{ interface.name }}: Set trunk native VLAN"
   when: >-
@@ -30,6 +33,7 @@
     config: |
       interface {{ interface.name }}
       switchport trunk native vlan {{ interface.config.pvid }}
+  notify: Save configuration
 
 - name: "{{ interface.name }}: Clear trunk native VLAN"
   when: >-
@@ -39,6 +43,7 @@
     config: |
       interface {{ interface.name }}
       no switchport trunk native vlan
+  notify: Save configuration
 
 - name: "{{ interface.name }}: Set trunk allowed VLANs"
   when: >-
@@ -48,6 +53,7 @@
     config: |
       interface {{ interface.name }}
       switchport trunk allowed vlan {{ (interface.config.tagged|default([]) + ([interface.config.pvid] if interface.config.pvid|default("") != "" else []))|unique|sort|join(',') }}
+  notify: Save configuration
 
 - name: "{{ interface.name }}: Clear trunk allowed VLANs"
   when: >-
@@ -58,6 +64,7 @@
     config: |
       interface {{ interface.name }}
       no switchport trunk allowed vlan
+  notify: Save configuration
 
 - name: "{{ interface.name }}: Clear general mode VLAN configuration on trunk ports"
   when: >-
@@ -97,6 +104,7 @@
         config: |
           interface {{ interface.name }}
           vlan participation include {{ default_vlan_ids|join(',') }}
+      notify: Save configuration
 
     - name: "{{ interface.name }}: Reset other VLANs participation"
       when: other_vlan_ids|length > 0
@@ -104,6 +112,7 @@
         config: |
           interface {{ interface.name }}
           vlan participation auto {{ other_vlan_ids|join(',') }}
+      notify: Save configuration
 
     - name: "{{ interface.name }}: Remove general mode vlan tagging and pvid"
       when: (default_vlan_ids + other_vlan_ids)|length > 0
@@ -112,3 +121,4 @@
           interface {{ interface.name }}
           no vlan tagging {{ (default_vlan_ids + other_vlan_ids)|join(',') }}
           no vlan pvid
+      notify: Save configuration
