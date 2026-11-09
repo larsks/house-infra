@@ -1,0 +1,362 @@
+---
+automerge: false
+notifications: true
+files:
+  $actions/aireos.py:
+    labels: aireos cisco networking
+  $actions/aruba.py:
+    maintainers: $team_aruba
+    labels: aruba networking
+  $actions/ce.py:
+    maintainers: $team_huawei
+    labels: huawei networking
+  $actions/ce_template.py:
+    maintainers: $team_huawei
+    labels: huawei networking
+  $actions/cnos.py:
+    maintainers: $team_lenovo
+  $actions/enos.py:
+    maintainers: amuraleedhar
+  $actions/exos.py:
+    maintainers: $team_extreme
+    labels: exos networking
+  $actions/ironware.py:
+    maintainers: paulquack
+    labels: ironware networking
+  $actions/slxos.py:
+    maintainers: $team_extreme
+    labels: networking slxos
+  $actions/sros.py:
+    maintainers: $team_networking
+    labels: networking sros
+  $actions/voss.py:
+    maintainers: $team_extreme
+    labels: networking voss
+  $actions/edgeos_config.py:
+    maintainers: $team_edgeos
+  $actions/nos_config.py: {}
+  $cliconfs/:
+    labels: networking
+  $cliconfs/apconos.py:
+    maintainers: davidlee-ap
+  $cliconfs/aruba.py:
+    maintainers: $team_aruba
+    labels: aruba networking
+  $cliconfs/ce.py:
+    maintainers: $team_huawei
+    labels: ce cloudengine huawei networking
+  $cliconfs/edgeswitch.py:
+    maintainers: f-bor
+    labels: edgeswitch networking
+  $cliconfs/eric_eccli.py:
+    maintainers: $team_networking itercheng
+    labels: eric_eccli networking
+  $cliconfs/exos.py:
+    maintainers: $team_extreme rdvencioneck
+    labels: exos networking
+  $cliconfs/icx.py:
+    maintainers: Commscope
+  $cliconfs/ironware.py:
+    maintainers: paulquack
+    labels: ironware networking
+  $cliconfs/nos.py:
+    maintainers: $team_extreme
+    labels: networking nos
+  $cliconfs/slxos.py:
+    maintainers: $team_extreme
+    labels: networking slxos
+  $cliconfs/voss.py:
+    maintainers: $team_extreme
+    labels: networking voss
+  $cliconfs/weos4.py:
+    maintainers: ernst-s
+  $doc_fragments/:
+    labels: networking
+  $httpapis/:
+    maintainers: $team_networking
+    labels: networking
+  $httpapis/exos.py:
+    maintainers: $team_networking LindsayHill ujwalkomarla
+    labels: exos networking
+  $httpapis/ftd.py:
+    maintainers: $team_networking annikulin
+    labels: cisco ftd networking
+    keywords: firepower ftd
+  $module_utils/network/a10/a10.py:
+    maintainers: ericchou1 mischapeters
+    labels: networking
+  $module_utils/network/aireos/aireos.py:
+    labels: cisco networking
+  $module_utils/network/aos/aos.py:
+    maintainers: dgarros jeremyschulman
+    labels: networking
+  $module_utils/network/apconos/apconos.py:
+    labels: networking
+  $module_utils/network/aruba/aruba.py:
+    maintainers: $team_aruba
+    labels: networking
+  $module_utils/network/avi/:
+    maintainers: $team_avi
+    labels: networking
+  $module_utils/network/bigswitch/bigswitch.py:
+    maintainers: jayakody tedelhourani vuile
+    labels: networking
+  $module_utils/network/cloudengine/ce.py:
+    maintainers: $team_huawei
+    labels: huawei networking
+  $module_utils/network/cnos/:
+    ignore: amuraleedhar dkasberg
+    maintainers: $team_lenovo
+    labels: networking
+  $module_utils/network/edgeos/edgeos.py:
+    labels: networking
+  $module_utils/network/edgeswitch/:
+    maintainers: f-bor
+    labels: networking
+  $module_utils/network/enos/enos.py:
+    maintainers: amuraleedhar
+    labels: networking
+  $module_utils/network/eric_eccli/eric_eccli.py:
+    maintainers: $team_networking itercheng
+    labels: networking
+  $module_utils/network/exos/:
+    maintainers: $team_extreme rdvencioneck
+    labels: networking
+  $module_utils/network/ftd/:
+    maintainers: $team_ftd
+    labels: cisco networking
+    keywords: firepower ftd
+  $module_utils/network/:
+    labels: networking
+  $module_utils/network/ironware/ironware.py:
+    maintainers: paulquack
+    labels: networking
+  $module_utils/network/netscaler/netscaler.py:
+    maintainers: $team_netscaler
+    labels: networking
+  $module_utils/network/netvisor/:
+    labels: networking
+  $module_utils/network/nos/nos.py:
+    maintainers: $team_extreme
+    labels: networking
+  $module_utils/network/ordnance/ordnance.py:
+    maintainers: alexanderturner djh00t
+    labels: networking
+  $module_utils/network/slxos/slxos.py:
+    maintainers: $team_extreme
+    labels: networking
+  $module_utils/network/sros/sros.py:
+    labels: networking
+  $module_utils/network/voss/voss.py:
+    maintainers: $team_extreme
+    labels: networking
+  $module_utils/_version.py: {}
+  $module_utils/version.py: {}
+
+  $modules/a10_:
+    maintainers: ericchou1 mischapeters
+  $modules/a10_server_axapi3.py:
+    maintainers: ericchou1 mischapeters
+  $modules/aireos_:
+    maintainers: jmighion
+    labels: cisco networking
+    ignore: jmighion
+  $modules/apconos_command.py:
+    maintainers: davidlee-ap
+  $modules/aruba_:
+    maintainers: jmighion $team_aruba
+    ignore: jmighion
+  $modules/avi_:
+    maintainers: grastogi23 ericsysmin khaltore
+  $modules/avi_api_version.py:
+    maintainers: vivobg $team_avi
+  $modules/avi_autoscalelaunchconfig.py:
+    maintainers: chaitanyaavi $team_avi
+  $modules/avi_l4policyset.py:
+    maintainers: chaitanyaavi $team_avi
+  $modules/avi_user.py:
+    maintainers: gitshrikant $team_avi
+  $modules/avi_useraccount.py:
+    maintainers: chaitanyaavi $team_avi
+  $modules/bcf_switch.py:
+    maintainers: tedelhourani jayakody vuile
+  $modules/bigmon_:
+    maintainers: tedelhourani jayakody vuile
+  $modules/ce_:
+    maintainers: QijunPan TommyLike edisonxiang freesky-edward hwDCN niuzhenguo xuxiaowei0512 yanzhangi zengchen1024 zhongjun2
+    labels: huawei networking
+  $modules/ce_command.py:
+    maintainers: CloudEngine-Ansible $team_huawei
+  $modules/ce_is_is_instance.py:
+    maintainers: CloudEngine-Ansible
+  $modules/ce_is_is_interface.py:
+    maintainers: CloudEngine-Ansible
+  $modules/ce_is_is_view.py:
+    maintainers: CloudEngine-Ansible
+  $modules/ce_lacp.py:
+    maintainers: CloudEngine-Ansible
+  $modules/ce_lldp.py:
+    maintainers: CloudEngine-Ansible
+  $modules/ce_lldp_interface.py:
+    maintainers: CloudEngine-Ansible
+  $modules/ce_mdn_interface.py:
+    maintainers: CloudEngine-Ansible
+  $modules/ce_multicast_global.py:
+    maintainers: xuxiaowei0512 QijunPan TommyLike edisonxiang freesky-edward hwDCN niuzhenguo yanzhangi zengchen1024 zhongjun2
+  $modules/ce_multicast_igmp_enable.py:
+    maintainers: CloudEngine-Ansible $team_huawei
+  $modules/ce_static_route_bfd.py:
+    maintainers: CloudEngine-Ansible $team_huawei
+  $modules/ce_vrrp.py:
+    maintainers: numone213 $team_huawei
+  $modules/cv_server_provision.py:
+    maintainers: mharista
+  $modules/cnos_:
+    ignore: amuraleedhar dkasberg
+    maintainers: $team_lenovo
+  $modules/cnos_linkagg.py:
+    maintainers: auraleedhar
+  $modules/nclu.py:
+    maintainers: isharacomix jrrivers
+  $modules/edgeos_:
+    maintainers: Qalthos samdoran $team_edgeos
+  $modules/edgeos_command.py:
+    maintainers: beardymcbeards samdoran
+  $modules/edgeswitch_:
+    maintainers: f-bor
+  $modules/enos_:
+    maintainers: amuraleedhar
+  $modules/eric_eccli_command.py:
+    maintainers: itercheng
+  $modules/exos_command.py:
+    maintainers: rdvencioneck $team_extreme
+  $modules/exos_config.py:
+    maintainers: hlrichardson $team_extreme rdvencioneck
+  $modules/exos_facts.py:
+    maintainers: hlrichardson ujwalkomarla LindsayHill rdvencioneck
+  $modules/exos_l2_interfaces.py:
+    maintainers: jayalakshmiV $team_extreme rdvencioneck
+  $modules/exos_lldp_global.py:
+    maintainers: ujwalkomarla LindsayHill rdvencioneck
+  $modules/exos_lldp_interfaces.py:
+    maintainers: JayalakshmiV $team_extreme rdvencioneck
+  $modules/exos_vlans.py:
+    maintainers: jayalakshmiV $team_extreme rdvencioneck
+  $modules/ftd_:
+    maintainers: annikulin
+    labels: cisco networking
+    keywords: firepower ftd
+  $modules/icx_:
+    maintainers: Commscope sushma-alethea
+  $modules/dladm_:
+    maintainers: xen0l bcoca danowar2k fishman jasperla jpdasma mator scathatheworm troy2914
+    labels: solaris
+    keywords: beadm dladm illumos ipadm nexenta omnios openindiana pfexec smartos solaris sunos zfs zpool
+  $modules/flowadm.py:
+    maintainers: xen0l bcoca danowar2k fishman jasperla jpdasma mator scathatheworm troy2914
+    labels: solaris
+    keywords: beadm dladm illumos ipadm nexenta omnios openindiana pfexec smartos solaris sunos zfs zpool
+  $modules/ipadm_:
+    maintainers: xen0l bcoca danowar2k fishman jasperla jpdasma mator scathatheworm troy2914
+    labels: solaris
+    keywords: beadm dladm illumos ipadm nexenta omnios openindiana pfexec smartos solaris sunos zfs zpool
+  $modules/ig_:
+    maintainers: ingatesystems
+  $modules/ironware_:
+    maintainers: paulquack
+  $modules/iap_:
+    maintainers: cma0
+  $modules/netact_cm_command.py:
+    maintainers: hatuomin
+  $modules/netscaler_:
+    maintainers: giorgos-nikolopoulos chiradeep
+  $modules/pn_:
+    maintainers: rajaspachipulusu17 $team_netvisor
+  $modules/nos_:
+    maintainers: LindsayHill ujwalkomarla
+  $modules/nuage_vspk.py:
+    maintainers: pdellaert
+  $modules/opx_cps.py:
+    maintainers: skg-net
+  $modules/ordnance_:
+    maintainers: alexanderturner djh00t
+  $modules/vdirect_:
+    maintainers: evgenyfedoruk
+  $modules/slxos_:
+    maintainers: bigmstone LindsayHill ujwalkomarla
+    ignore: bigmstone
+  $modules/slxos_vlan.py:
+    maintainers: lindsayhill $team_extreme
+  $modules/sros_:
+    maintainers: privateip
+  $modules/voss_:
+    maintainers: LindsayHill
+  $netconfs/ce.py:
+    maintainers: $team_huawei
+    labels: ce cloudengine huawei networking
+  $lookups/avi.py:
+    maintainers: sabandi $team_avi
+  $terminals/:
+    labels: networking
+  $terminals/aruba.py:
+    maintainers: $team_aruba
+    labels: aruba networking
+  $terminals/ce.py:
+    maintainers: $team_huawei
+    labels: ce cloudengine huawei networking
+  $terminals/edgeos.py:
+    maintainers: samdoran
+    labels: edgeos networking
+  $terminals/edgeswitch.py:
+    maintainers: f-bor
+    labels: edgeswitch networking
+  $terminals/eric_eccli.py:
+    maintainers: itercheng
+    labels: eric_eccli networking
+  $terminals/exos.py:
+    maintainers: $team_extreme rdvencioneck
+    labels: exos networking
+  $terminals/ironware.py:
+    maintainers: paulquack
+    labels: ironware networking
+  $terminals/nos.py:
+    maintainers: $team_extreme
+    labels: networking nos
+  $terminals/slxos.py:
+    maintainers: $team_extreme
+    labels: networking slxos
+  $terminals/sros.py:
+    maintainers: $team_networking
+    labels: networking sros
+  $terminals/voss.py:
+    maintainers: $team_extreme
+    labels: networking voss
+
+macros:
+  actions: plugins/action
+  becomes: plugins/become
+  callbacks: plugins/callback
+  cliconfs: plugins/cliconf
+  connections: plugins/connection
+  doc_fragments: plugins/doc_fragments
+  filters: plugins/filter
+  httpapis: plugins/httpapi
+  inventories: plugins/inventory
+  lookups: plugins/lookup
+  module_utils: plugins/module_utils
+  modules: plugins/modules
+  netconfs: plugins/netconf
+  terminals: plugins/terminal
+  team_aci: aciguru brunocalogero devarshishah3 fadallar jmcgill298 koladiya mtorelli rsmeyers schunduri smnmtzgr
+  team_aruba: karthikeyan-dhandapani
+  team_avi: ericsysmin grastogi23 khaltore
+  team_e_spirit: MatrixCrawler
+  team_edgeos: Qalthos samdoran jplitza virtualguy
+  team_extreme: LindsayHill ujwalkomarla
+  team_ftd: annikulin
+  team_huawei: QijunPan TommyLike edisonxiang freesky-edward hwDCN niuzhenguo xuxiaowei0512 yanzhangi zengchen1024 zhongjun2
+  team_lenovo: mihdm RRNegru
+  team_netscaler: chiradeep giorgos-nikolopoulos
+  team_netvisor: Qalthos amitsi csharpe-pn pdam preetiparasar
+  team_networking: NilashishC Qalthos danielmellado ganeshrn justjais trishnaguha
+  team_scaleway: abarbare remyleone

@@ -1,0 +1,12 @@
+- hosts: switches
+  gather_facts: false
+  tasks:
+    - include_role:
+        name: switchport
+      vars:
+        interface:
+          name: "{{ item.0 }}"
+          config: "{{ item.1 }}"
+      loop: "{{ interfaces|items }}"
+      when: >-
+        interfaces|default({})|length > 0
