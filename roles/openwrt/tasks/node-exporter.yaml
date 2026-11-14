@@ -6,8 +6,9 @@
       - prometheus-node-exporter-ucode-openwrt
 
 - name: Install thermal collector
-  ansible.builtin.include_tasks:
-    file: thermal-collector.yaml
+  community.openwrt.copy:
+    src: thermal.uc
+    dest: /usr/share/ucode/node-exporter/lib/thermal.uc
 
 - name: Configure prometheus-node-exporter-ucode
   ansible.builtin.include_tasks:

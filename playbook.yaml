@@ -1,5 +1,5 @@
 - hosts: openwrt_hpe1920
   gather_facts: false
   tasks:
-    - include_role:
+    - ansible.builtin.import_role:
         name: openwrt
