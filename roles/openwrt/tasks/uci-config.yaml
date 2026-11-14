@@ -1,5 +1,5 @@
 - name: Install config {{ config_name }}
-  notify: reload-{{ config_name }}
+  notify: reload-{{ service_name | default(config_name) }}
   community.openwrt.template:
     src: "{{ config_name }}"
     dest: /etc/config/{{ config_name }}
