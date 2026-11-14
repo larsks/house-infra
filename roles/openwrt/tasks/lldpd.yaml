@@ -1,0 +1,19 @@
+- name: Ensure lldp is installed
+  community.openwrt.apk:
+    name:
+      - lldpd
+
+- name: Configure lldpd to send on all interfaces
+  community.openwrt.uci:
+    autocommit: true
+    command: delete
+    key: lldpd.config.interface
+  notify: reload-lldpd
+
+- name: Configure lldpd device location
+  community.openwrt.uci:
+    autocommit: true
+    command: set
+    key: lldpd.config.location
+    value: Office
+  notify: reload-lldpd

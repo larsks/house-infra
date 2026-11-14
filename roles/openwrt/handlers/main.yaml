@@ -1,0 +1,23 @@
+- name: Reload lldpd
+  listen: reload-lldpd
+  community.openwrt.service:
+    name: lldpd
+    state: reloaded
+
+- name: Reload system config
+  listen: reload-system
+  community.openwrt.service:
+    name: system
+    state: reloaded
+
+- name: Reload network config
+  listen: reload-network
+  community.openwrt.service:
+    name: network
+    state: reloaded
+
+- name: Reload node exporter
+  listen: reload-prometheus-node-exporter-ucode
+  community.openwrt.service:
+    name: prometheus-node-exporter-ucode
+    state: reloaded

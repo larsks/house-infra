@@ -10,11 +10,10 @@
   vars:
     config_name: network
 
-- name: Install thermal collector
+- name: Install and configure lldpd
   ansible.builtin.include_tasks:
-    file: thermal-collector.yaml
+    file: lldpd.yaml
 
-- name: Ensure lldp
-  community.openwrt.apk:
-    name:
-      - lldpd
+- name: Install and configure lldpd
+  ansible.builtin.include_tasks:
+    file: exporter.yaml
