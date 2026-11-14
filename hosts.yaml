@@ -3,6 +3,9 @@ all:
     switches:
       children:
         openwrt_hpe1920:
+          vars:
+            ansible_ssh_transfer_method: scp
+            ansible_scp_extra_args: "-O"
           hosts:
             office-sw-2:
               ansible_user: root
