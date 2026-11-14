@@ -1,0 +1,38 @@
+config interface 'loopback'
+  option device 'lo'
+  option proto 'static'
+  list ipaddr '127.0.0.1/8'
+
+config globals 'globals'
+  option dhcp_default_duid '{{ dhcp_default_duid }}'
+  option ula_prefix '{{ ula_prefix }}'
+
+{% for device in devices %}
+config device
+{% for key in device.keys() %}
+  option {{ key }} '{{ device[key] }}'
+{% endfor %}
+
+{% endfor %}
+
+{% for interface in interfaces %}
+config interface{{ (' ' + interface.label) if interface.label else '' }}
+{% for key in interface.keys() %}
+{% if key == "dns" %}
+{% for dns in interface.dns|default([]) %}
+  list dns '{{ dns }}'
+{% endfor %}
+{% else %}
+  option {{ key }} '{{ interface[key] }}'
+{% endif %}
+{% endfor %}
+
+{% endfor %}
+
+{% for vlan in vlans %}
+config bridge-vlan 'vlan{{vlan.id}}'
+  option device '{{ vlan.device|default('switch') }}'
+  option vlan '{{ vlan.id }}'
+  option ports '{{ vlan.id | vlan_ports(ports) | join(' ') }}'
+
+{% endfor %}
