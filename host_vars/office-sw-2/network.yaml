@@ -1,3 +1,5 @@
+dnsmasq_domain: "dev.house"
+
 dhcp_default_duid: "00049a2768f9437149ba9e329b202eb4a923"
 ula_prefix: "fd65:4949:c2ae::/48"
 switch_macaddr: "d8:94:03:9e:05:f7"
@@ -21,7 +23,11 @@ interfaces:
 vlans:
   - id: 1
   - id: 101
+    dhcp: true
+    cidr: 192.168.101.0/24
   - id: 102
+    dhcp: true
+    cidr: 192.168.102.0/24
 
 ports:
   lan1:

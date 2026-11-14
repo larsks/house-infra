@@ -1,3 +1,4 @@
+import ipaddress
 from dataclasses import dataclass
 
 
@@ -11,7 +12,30 @@ class FilterModule:
     """Filters for working with openwrt"""
 
     def filters(self):
-        return {"vlan_ports": self.vlan_ports}
+        return {
+            "vlan_ports": self.vlan_ports,
+            "nth_host": self.nth_host,
+            "dhcp_pool": self.dhcp_pool,
+        }
+
+    def nth_host(self, cidr: str | None, host: int) -> str:
+        if not cidr:
+            raise ValueError("cidr is required when dhcp is enabled on a vlan")
+
+        network = ipaddress.ip_network(cidr, strict=False)
+        return f"{network.network_address + host}/{network.prefixlen}"
+
+    def dhcp_pool(self, cidr: str | None) -> dict[str, int]:
+        if not cidr:
+            raise ValueError("cidr is required when dhcp is enabled on a vlan")
+
+        network = ipaddress.ip_network(cidr, strict=False)
+        start = 2
+        limit = network.num_addresses - 3
+        if limit < 1:
+            raise ValueError(f"cidr {cidr} is too small to host a dhcp pool")
+
+        return {"start": start, "limit": limit}
 
     def vlan_ports(self, vlan: str | int, ports: dict[str, Port]) -> list[str]:
         vlan = int(vlan)

@@ -21,3 +21,9 @@
   community.openwrt.service:
     name: prometheus-node-exporter-ucode
     state: reloaded
+
+- name: Reload dnsmasq
+  listen: reload-dnsmasq
+  community.openwrt.service:
+    name: dnsmasq
+    state: reloaded

@@ -29,3 +29,10 @@
     apply:
       tags: node-exporter
   tags: node-exporter
+
+- name: Install and configure dnsmasq
+  ansible.builtin.include_tasks:
+    file: dnsmasq.yaml
+    apply:
+      tags: dnsmasq
+  tags: dnsmasq
