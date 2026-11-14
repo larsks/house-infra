@@ -9,3 +9,7 @@
     file: uci-config.yaml
   vars:
     config_name: network
+
+- name: Install thermal collector
+  ansible.builtin.include_tasks:
+    file: thermal-collector.yaml
