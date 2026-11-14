@@ -1,0 +1,16 @@
+- name: Install node-exporter packages
+  community.openwrt.apk:
+    state: present
+    name:
+      - prometheus-node-exporter-ucode
+      - prometheus-node-exporter-ucode-openwrt
+
+- name: Install thermal collector
+  ansible.builtin.include_tasks:
+    file: thermal-collector.yaml
+
+- name: Configure prometheus-node-exporter-ucode
+  ansible.builtin.include_tasks:
+    file: uci-config.yaml
+  vars:
+    config_name: prometheus-node-exporter-ucode

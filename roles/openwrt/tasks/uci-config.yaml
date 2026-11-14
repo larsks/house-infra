@@ -1,12 +1,6 @@
 - name: Install config {{ config_name }}
-  register: openwrt_res
+  notify: reload-{{ config_name }}
   community.openwrt.template:
     src: "{{ config_name }}"
     dest: /etc/config/{{ config_name }}
     validate: uci -f %s import {{ config_name }}
-
-- name: Reload config {{ config_name }}  # noqa: no-handler
-  when: openwrt_res.changed
-  community.openwrt.service:
-    name: "{{ config_name }}"
-    state: reloaded
