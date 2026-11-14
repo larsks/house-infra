@@ -1,19 +1,31 @@
 - name: Configure system
   ansible.builtin.include_tasks:
     file: uci-config.yaml
+    apply:
+      tags: system
+  tags: system
   vars:
     config_name: system
 
 - name: Configure network
   ansible.builtin.include_tasks:
     file: uci-config.yaml
+    apply:
+      tags: network
+  tags: network
   vars:
     config_name: network
 
 - name: Install and configure lldpd
   ansible.builtin.include_tasks:
     file: lldpd.yaml
+    apply:
+      tags: lldpd
+  tags: lldpd
 
-- name: Install and configure lldpd
+- name: Install and configure node exporter
   ansible.builtin.include_tasks:
-    file: exporter.yaml
+    file: node-exporter.yaml
+    apply:
+      tags: node-exporter
+  tags: node-exporter

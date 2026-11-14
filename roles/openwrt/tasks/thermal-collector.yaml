@@ -1,4 +1,0 @@
-- name: Install thermal collector
-  community.openwrt.copy:
-    src: thermal.uc
-    dest: /usr/share/ucode/node-exporter/lib/thermal.uc
