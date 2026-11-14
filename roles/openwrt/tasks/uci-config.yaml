@@ -1,0 +1,31 @@
+- name: Generate {{ config_name }} config
+  changed_when: false
+  ansible.builtin.raw: |
+    rm -rf /tmp/uci-test
+    mkdir -p /tmp/uci-test
+    cat > /tmp/uci-test/{{ config_name }} <<'ANSIBLE_EOF'
+    {{ lookup('template', config_name) }}
+    ANSIBLE_EOF
+
+- name: Check {{ config_name }} config
+  changed_when: false
+  ansible.builtin.raw: |
+    uci -c /tmp/uci-test show {{ config_name }}
+
+- name: Activate {{ config_name }} config
+  register: res
+  failed_when: res.rc == 1
+  changed_when: res.rc == 2
+  ansible.builtin.raw: |
+    set -e
+
+    # do nothing if there are no changes
+    if  cmp /tmp/uci-test/{{ config_name }} /etc/config/{{ config_name }}; then
+      exit 0
+    fi
+
+    cp /tmp/uci-test/{{ config_name }} /etc/config/{{ config_name }}
+    /etc/init.d/{{ config_name }} reload
+
+    # indicate change
+    exit 2

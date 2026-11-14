@@ -2,14 +2,7 @@ all:
   children:
     switches:
       children:
-        netgear_m4100:
-          vars:
-            ansible_user: admin
-            ansible_password: "{{ lookup('env', 'ANSIBLE_SSH_PASSWORD') }}"
-            ansible_connection: ansible.netcommon.network_cli
-            ansible_become: true
-            ansible_become_method: enable
-            ansible_network_os: community.network.edgeswitch
+        openwrt_hpe1920:
           hosts:
-            office-sw-0:
-            office-sw-1:
+            office-sw-2:
+              ansible_user: root

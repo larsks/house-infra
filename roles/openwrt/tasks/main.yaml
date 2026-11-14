@@ -1,0 +1,11 @@
+- name: Configure system
+  ansible.builtin.include_tasks:
+    file: uci-config.yaml
+  vars:
+    config_name: system
+
+- name: Configure network
+  ansible.builtin.include_tasks:
+    file: uci-config.yaml
+  vars:
+    config_name: network
