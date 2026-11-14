@@ -1,0 +1,27 @@
+- name: Stage thermal collector
+  changed_when: false
+  ansible.builtin.raw: |
+    mkdir -p /tmp/thermal-uc-test
+    cat > /tmp/thermal-uc-test/thermal.uc <<'ANSIBLE_EOF'
+    {{ lookup('file', 'thermal.uc') }}
+    ANSIBLE_EOF
+
+- name: Install thermal collector
+  register: res
+  failed_when: res.rc == 1
+  changed_when: res.rc == 2
+  ansible.builtin.raw: |
+    set -e
+
+    dest=/usr/share/ucode/node-exporter/lib/thermal.uc
+
+    # do nothing if there are no changes
+    if [ -f "$dest" ] && cmp /tmp/thermal-uc-test/thermal.uc "$dest"; then
+      exit 0
+    fi
+
+    mkdir -p "$(dirname "$dest")"
+    cp /tmp/thermal-uc-test/thermal.uc "$dest"
+
+    # indicate change
+    exit 2
