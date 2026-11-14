@@ -13,3 +13,8 @@
 - name: Install thermal collector
   ansible.builtin.include_tasks:
     file: thermal-collector.yaml
+
+- name: Ensure lldp
+  community.openwrt.apk:
+    name:
+      - lldpd
