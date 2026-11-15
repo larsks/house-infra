@@ -27,3 +27,9 @@
   community.openwrt.service:
     name: dnsmasq
     state: reloaded
+
+- name: Reload firewall config
+  listen: reload-firewall
+  community.openwrt.service:
+    name: firewall
+    state: reloaded
