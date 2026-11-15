@@ -1,17 +1,15 @@
-all:
+switches:
   children:
-    switches:
-      children:
-        openwrt_hpe1920:
-          vars:
-            ansible_ssh_transfer_method: scp
-            ansible_scp_extra_args: "-O"
-          hosts:
-            office-sw-2:
-              ansible_user: root
-    routers:
-      children:
-        edgerouter_x:
-          hosts:
-            gw.house:
-              ansible_user: ubnt
+    openwrt_hpe1920:
+      vars:
+        ansible_ssh_transfer_method: scp
+        ansible_scp_extra_args: "-O"
+      hosts:
+        office-sw-2:
+          ansible_user: root
+routers:
+  children:
+    edgerouter_x:
+      hosts:
+        gw.house:
+          ansible_user: ubnt
