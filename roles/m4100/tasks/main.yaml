@@ -1,0 +1,10 @@
+- name: Configure switch ports
+  ansible.builtin.include_tasks:
+    file: switchports.yaml
+  vars:
+    interface:
+      name: "{{ item.0 }}"
+      config: "{{ item.1 }}"
+  loop: "{{ ports | items }}"
+  when: >-
+    ports|default({})|length > 0

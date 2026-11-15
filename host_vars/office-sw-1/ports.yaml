@@ -1,85 +1,56 @@
-interfaces:
+ports:
   "0/1":
     portmode: trunk
+    description: Uplink to house network
     enabled: true
     tagged:
-      - 101
       - 102
     pvid: 100
   "0/2":
     portmode: trunk
+    description: madhatter
     enabled: true
     tagged:
+      - 1
       - 101
       - 102
     pvid: 100
   "0/3":
     portmode: trunk
     enabled: true
-    tagged:
-      - 101
-      - 102
-    pvid: 100
+    pvid: 101
   "0/4":
     portmode: trunk
     enabled: true
-    tagged:
-      - 101
-      - 102
     pvid: 100
   "0/5":
     portmode: trunk
     enabled: true
-    tagged:
-      - 101
-      - 102
     pvid: 100
   "0/6":
     portmode: trunk
     enabled: true
-    tagged:
-      - 101
-      - 102
     pvid: 100
   "0/7":
     portmode: trunk
     enabled: true
-    tagged:
-      - 101
-      - 102
     pvid: 100
   "0/8":
     portmode: trunk
     enabled: true
-    tagged:
-      - 101
-      - 102
     pvid: 100
   "0/9":
     portmode: trunk
     enabled: true
-    tagged:
-      - 101
-      - 102
     pvid: 100
   "0/10":
     portmode: trunk
     enabled: true
-    tagged:
-      - 101
-      - 102
     pvid: 100
-  "0/11":
+  "lag 1":
     portmode: trunk
     enabled: true
     tagged:
+      - 100
       - 101
       - 102
-    pvid: 100
-  "0/12":
-    portmode: trunk
-    enabled: true
-    tagged:
-      - 101
-      - 102
-    pvid: 100

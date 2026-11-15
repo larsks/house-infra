@@ -1,3 +1,4 @@
 - name: Save configuration
+  listen: save-configuration
   ansible.netcommon.cli_command:
     command: save
