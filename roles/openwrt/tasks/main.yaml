@@ -16,6 +16,15 @@
   vars:
     config_name: network
 
+- name: Configure firewall
+  ansible.builtin.include_tasks:
+    file: uci-config.yaml
+    apply:
+      tags: firewall
+  tags: firewall
+  vars:
+    config_name: firewall
+
 - name: Install and configure lldpd
   ansible.builtin.include_tasks:
     file: lldpd.yaml
