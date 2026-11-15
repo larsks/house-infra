@@ -1,4 +1,5 @@
 dnsmasq_domain: "dev.house"
+dnsmasq_lease_file: "/var/state/dhcp.leases"
 
 dhcp_default_duid: "00049a2768f9437149ba9e329b202eb4a923"
 ula_prefix: "fd65:4949:c2ae::/48"

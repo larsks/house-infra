@@ -6,3 +6,4 @@ dnsmasq_domain: lan
 dnsmasq_rebind_protection: 0
 dnsmasq_rebind_localhost: 1
 dnsmasq_authoritative: 1
+dnsmasq_lease_file: /tmp/dhcp.leases

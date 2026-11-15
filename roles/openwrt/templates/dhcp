@@ -13,7 +13,7 @@ config dnsmasq 'dnsmasq'
   option nonegcache 0
   option authoritative  {{ dnsmasq_authoritative }}
   option readethers 1
-  option leasefile  '/tmp/dhcp.leases'
+  option leasefile  '{{ dnsmasq_lease_file }}'
   option resolvfile '/tmp/resolv.conf.d/resolv.conf.auto'
   option nonwildcard  1
   option localservice 1
