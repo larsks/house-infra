@@ -1,0 +1,29 @@
+- name: Template configuration
+  ansible.builtin.set_fact:
+    rendered_config: "{{ lookup('ansible.builtin.template', 'config.boot') }}"
+
+- name: Copy configuration to router
+  changed_when: false
+  ansible.builtin.raw: |
+    base64 -d > config.new <<EOF
+    {{ rendered_config | b64encode }}
+    EOF
+
+- name: Apply configuration on router
+  timeout: 30
+  when: edgerouter_apply_config|default(true)|bool
+  changed_when: "'###CONFIG CHANGED###' in apply.stdout"
+  ansible.builtin.raw: |
+    /bin/vbash -c '
+    export _OFR_CONFIGURE=ok
+    . /etc/bash_completion.d/vyatta-cfg 2>/dev/null
+    set -e
+    load /home/ubnt/config.new
+    if compare; then
+      commit
+      save
+      echo "###CONFIG CHANGED###"
+    fi
+    exit
+    ' < /dev/null
+  register: apply

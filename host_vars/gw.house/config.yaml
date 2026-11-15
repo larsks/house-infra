@@ -1,0 +1,136 @@
+remote_syslog:
+  enabled: true
+  loghost: 192.168.1.211
+  loglevel: info
+
+scheduled_tasks:
+  - name: renew-certificate
+    path: /config/renew-certificate.sh
+    args: "> /var/log/renew-certificate.log 2>&1"
+    interval: 1d
+
+hosts_static_entries:
+  - name: gw.house
+    address: 192.168.1.1
+  - name: keg.house
+    address: 192.168.1.99
+
+dns_static_entries:
+  - name: .keg.house
+    address: 192.168.1.210
+
+dhcp_static_entries:
+  - name: colorprinter
+    ipaddress: 192.168.1.51
+    macaddress: 18:60:24:09:fe:21
+  - name: office-sw-0
+    ipaddress: 192.168.1.254
+    macaddress: 78:d2:94:53:24:54
+  - name: office-sw-1
+    ipaddress: 192.168.1.253
+    macaddress: 78:d2:94:41:3d:10
+  - name: office-sw-2
+    ipaddress: 192.168.1.252
+    macaddress: d8:94:03:9e:05:f7
+  - name: orbi
+    ipaddress: 192.168.1.5
+    macaddress: c8:9e:43:67:35:39
+  - name: orbi-sat-office
+    ipaddress: 192.168.1.7
+    macaddress: c8:9e:43:68:78:0b
+  - name: orbi-sat-upstairs
+    ipaddress: 192.168.1.6
+    macaddress: c8:9e:43:68:7c:97
+  - name: svc-node-0
+    ipaddress: 192.168.1.220
+    macaddress: fc:aa:14:fd:76:59
+  - name: svc-node-1
+    ipaddress: 192.168.1.221
+    macaddress: 1c:1b:0d:fd:2e:44
+  - name: keg.house
+    ipaddress: 192.168.1.99
+    macaddress: 00:11:32:b5:33:b9
+
+fw_rules_ipv4:
+  - name: LAN_IN
+    description: Connections from local network to router
+    default_action: accept
+    rules:
+      - action: accept
+        protocol: tcp
+        destination:
+          address: 192.168.1.1
+          port: 22
+        log: false
+  - name: WAN_IN
+    description: Connections from WAN to local network
+    default_action: drop
+    rules:
+      - action: accept
+        description: "Allow established/related"
+        state:
+          - established
+          - related
+      - action: drop
+        description: "Drop invalid state"
+        state:
+          - invalid
+  - name: WAN_LOCAL
+    description: Connections from WAN to router
+    default_action: drop
+    rules:
+      - action: accept
+        description: "Allow established/related"
+        state:
+          - established
+          - related
+      - action: drop
+        description: "Drop invalid state"
+        state:
+          - invalid
+
+fw_rules_ipv6:
+  - name: LANv6_IN
+    default_action: accept
+  - name: WANv6_IN
+    description: "WAN inbound traffic forwarded to LAN"
+    default_action: drop
+    rules:
+      - action: accept
+        description: "Allow established/related sessions"
+        state:
+          - established
+          - related
+      - action: drop
+        description: "Drop invalid state"
+        state:
+          - invalid
+      - action: accept
+        protocol: icmpv6
+      - action: accept
+        protocol: tcp
+        destination:
+          port: 22
+  - name: WANv6_LOCAL
+    description: "WAN inbound traffic to the router"
+    default_action: drop
+    rules:
+      - action: accept
+        description: "Allow established/related sessions"
+        state:
+          - established
+          - related
+      - action: drop
+        description: "Drop invalid state"
+        state:
+          - invalid
+      - action: accept
+        description: "Allow IPv6 icmp"
+        protocol: ipv6-icmp
+      - action: accept
+        description: "allow dhcpv6"
+        protocol: udp
+        destination:
+          port: 546
+        source:
+          port: 547

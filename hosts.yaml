@@ -9,3 +9,9 @@ all:
           hosts:
             office-sw-2:
               ansible_user: root
+    routers:
+      children:
+        edgerouter_x:
+          hosts:
+            gw.house:
+              ansible_user: ubnt

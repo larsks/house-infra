@@ -1,5 +1,13 @@
 - hosts: openwrt_hpe1920
+  tags: switches
   gather_facts: false
   tasks:
     - ansible.builtin.import_role:
         name: openwrt
+
+- hosts: gw.house
+  gather_facts: false
+  tags: router
+  tasks:
+    - include_role:
+        name: edgerouter
