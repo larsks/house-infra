@@ -1,105 +1,26 @@
+{% macro render(tree, indent) %}
+{% for key, value in tree.items() %}
+{% if value is mapping %}
+{{ indent }}{{ key }} {
+{{ render(value, indent + '    ') -}}
+{{ indent }}}
+{% else %}
+{{ indent }}{{ key }} {{ value }}
+{% endif %}
+{% endfor %}
+{% endmacro %}
 firewall {
     all-ping enable
     broadcast-ping disable
 {% for ruleset in fw_rules_ipv6|default([]) %}
-    ipv6-name {{ ruleset.name }} {
-        default-action {{ ruleset.default_action }}
-{% if ruleset.description is defined %}
-        description "{{ ruleset.description }}"
-{% endif %}
-{% for rule in ruleset.rules|default([]) %}
-        rule {{ loop.index }} {
-{% if rule.description is defined %}
-            description "{{ rule.description }}"
-{% endif %}
-            action {{ rule.action }}
-{% if rule.log|default(true) is false %}
-            log disable
-{% endif %}
-{% if rule.protocol is defined %}
-            protocol {{ rule.protocol }}
-{% endif %}
-{% if rule.destination is defined %}
-            destination {
-{% if rule.destination.address is defined %}
-                address {{ rule.destination.address }}
-{% endif %}
-{% if rule.destination.port is defined %}
-                port {{ rule.destination.port }}
-{% endif %}
-            }
-{% endif %}
-{% if rule.source is defined %}
-            source {
-{% if rule.source.address is defined %}
-                address {{ rule.source.address }}
-{% endif %}
-{% if rule.source.port is defined %}
-                port {{ rule.source.port }}
-{% endif %}
-            }
-{% endif %}
-{% if rule.state is defined %}
-            state {
-{% for state in rule.state %}
-                {{ state }} enable
-{% endfor %}
-            }
-{% endif %}
-        }
-{% endfor %}
-    }
+{{ render({'ipv6-name ' + ruleset.name: ruleset|fw_ruleset_tree}, '    ') -}}
 {% endfor %}
     ipv6-receive-redirects disable
     ipv6-src-route disable
     ip-src-route disable
     log-martians enable
 {% for ruleset in fw_rules_ipv4|default([]) %}
-    name {{ ruleset.name }} {
-        default-action {{ ruleset.default_action }}
-        description "{{ ruleset.description|default("") }}"
-{% for rule in ruleset.rules %}
-        rule {{ loop.index }} {
-{% if rule.description is defined %}
-            description "{{ rule.description }}"
-{% endif %}
-            action {{ rule.action }}
-{% if rule.log|default(true) is false %}
-            log disable
-{% endif %}
-{% if rule.protocol is defined %}
-            protocol {{ rule.protocol }}
-{% endif %}
-{% if rule.destination is defined %}
-            destination {
-{% if rule.destination.address is defined %}
-                address {{ rule.destination.address }}
-{% endif %}
-{% if rule.destination.port is defined %}
-                port {{ rule.destination.port }}
-{% endif %}
-            }
-{% endif %}
-{% if rule.source is defined %}
-            source {
-{% if rule.source.address is defined %}
-                address {{ rule.source.address }}
-{% endif %}
-{% if rule.source.port is defined %}
-                port {{ rule.source.port }}
-{% endif %}
-            }
-{% endif %}
-{% if rule.state is defined %}
-            state {
-{% for state in rule.state %}
-                {{ state }} enable
-{% endfor %}
-            }
-{% endif %}
-        }
-{% endfor %}
-    }
+{{ render({'name ' + ruleset.name: ruleset|fw_ruleset_tree}, '    ') -}}
 {% endfor %}
     receive-redirects disable
     send-redirects enable
