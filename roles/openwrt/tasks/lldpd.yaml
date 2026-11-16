@@ -1,4 +1,4 @@
-- name: Ensure lldp is installed
+- name: Ensure lldpd is installed
   community.openwrt.apk:
     name:
       - lldpd
