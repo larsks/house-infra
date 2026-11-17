@@ -18,6 +18,8 @@ hosts_static_entries:
 dns_static_entries:
   - name: .keg.house
     address: 192.168.1.210
+  - name: vmetrics.house
+    address: 192.168.5.10
 
 dhcp_static_entries:
   - name: colorprinter
@@ -144,7 +146,7 @@ fw_rules_ipv6:
 wireguard_interfaces:
   - name: wg0
     listen_port: 51820
-    address: 192.168.5.11/24
+    address: 192.168.5.1/24
     private_key: /config/auth/wg0.private
     peers:
       - description: vmetrics
