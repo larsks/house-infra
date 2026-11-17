@@ -1,0 +1,19 @@
+wireguard_interfaces:
+  - name: wg0
+    listen_port: 51820
+    address: 192.168.5.1/24
+    private_key: /config/auth/wg0.private
+    peers:
+      - description: vmetrics
+        public_key: 1L1hxyk1y9Zu80r3JTZoIr3+sdAGIDZvnn/6KCwIrhc=
+        allowed_ips: 192.168.5.10/32
+        endpoint: vmetrics.oddbit.com:51820
+      - description: client1
+        public_key: 7EjXlLzUMfoqzki9rN9au9hHVUV+2/QcVk04aRGBIzc=
+        allowed_ips: 192.168.5.20/32
+      - description: client2
+        public_key: SWKBcTCig9KBZSiV6jVBb1fBqcosL9F9CI6zQ7YfhT8=
+        allowed_ips: 192.168.5.21/32
+      - description: client3
+        public_key: xT4ddNbves0sNtXKZ7/HSuS1aBqx1fRt2nN8FKGCaDg=
+        allowed_ips: 192.168.5.22/32
