@@ -9,5 +9,11 @@
   gather_facts: false
   tags: router
   tasks:
+    - name: Ensure secrets are available
+      delegate_to: localhost
+      ansible.builtin.git:
+        repo: keybase://private/larsks/secrets
+        dest: secrets
+
     - include_role:
         name: edgerouter

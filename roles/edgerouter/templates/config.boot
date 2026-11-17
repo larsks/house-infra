@@ -147,6 +147,20 @@ service {
         use-dnsmasq enable
     }
     dns {
+        dynamic {
+{% for interface in dynamic_dns_services|default([]) %}
+            interface {{ interface.interface }} {
+{% for svc in interface.services|default([]) %}
+                service {{ svc.service }} {
+                    host-name {{ svc.hostname }}
+                    login {{ svc.login }}
+                    password {{ svc.password }}
+                    server {{ svc.server }}
+                } 
+{% endfor %}
+            }
+{% endfor %}
+        }
         forwarding {
             cache-size 150
             dhcp eth0
