@@ -36,9 +36,9 @@ class FilterModule:
     def fw_rule_tree(self, rule: Rule) -> ConfigTree:
         tree: ConfigTree = {}
 
+        tree["action"] = rule["action"]
         if "description" in rule:
             tree["description"] = f'"{rule["description"]}"'
-        tree["action"] = rule["action"]
         if not rule.get("log", True):
             tree["log"] = "disable"
         if "protocol" in rule:
@@ -63,6 +63,6 @@ class FilterModule:
             tree["description"] = f'"{ruleset["description"]}"'
 
         for index, rule in enumerate(ruleset.get("rules", []), start=1):
-            tree[f"rule {index}"] = self.fw_rule_tree(rule)
+            tree[f"rule {index * 10}"] = self.fw_rule_tree(rule)
 
         return tree
