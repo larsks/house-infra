@@ -102,6 +102,23 @@ interfaces {
             vlan-aware disable
         }
     }
+{% for wg in wireguard_interfaces %}
+    wireguard {{ wg.name }} {
+        address {{ wg.address }}
+        listen-port {{ wg.listen_port }}
+{% for peer in wg.peers|default([]) %}
+        peer {{ peer.public_key }} {
+            allowed-ips {{ peer.allowed_ips }}
+            description {{ peer.description }}
+{% if peer.endpoint is defined %}
+            endpoint {{ peer.endpoint }}
+{% endif %}
+        }
+{% endfor %}
+        private-key {{ wg.private_key }}
+        route-allowed-ips true
+    }
+{% endfor %}
 }
 protocols {}
 service {
