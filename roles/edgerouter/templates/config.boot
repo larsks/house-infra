@@ -166,7 +166,9 @@ service {
             dhcp eth0
             listen-on switch0
             listen-on switch0.10
-            listen-on wg0
+{% for wg in wireguard_interfaces %}
+            listen-on {{ wg.name }}
+{% endfor %}
             name-server 1.1.1.1
             name-server 1.0.0.1
 {% for entry in dns_static_entries %}
