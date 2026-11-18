@@ -1,4 +1,3 @@
-noip_ddns_key: "{{ lookup('file', 'secrets/house/gw.house/noip_ddns_key') }}"
 dynamic_dns_services:
   - interface: eth0
     services:
