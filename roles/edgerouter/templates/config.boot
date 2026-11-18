@@ -166,11 +166,12 @@ service {
             dhcp eth0
             listen-on switch0
             listen-on switch0.10
-{% for wg in wireguard_interfaces %}
+{% for wg in wireguard_interfaces|default([]) %}
             listen-on {{ wg.name }}
 {% endfor %}
-            name-server 1.1.1.1
-            name-server 1.0.0.1
+{% for ns in dns_nameservers|default([]) %}
+            name-server {{ ns }}
+{% endfor %}
 {% for entry in dns_static_entries %}
             options address=/{{ entry.name }}/{{ entry.address }}
 {% endfor %}

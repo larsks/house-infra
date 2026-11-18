@@ -1,3 +1,7 @@
+dns_nameservers:
+  - 1.1.1.1
+  - 1.0.0.1
+
 dynamic_dns_services:
   - interface: eth0
     services:
