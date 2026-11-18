@@ -15,12 +15,6 @@ hosts_static_entries:
   - name: keg.house
     address: 192.168.1.99
 
-dns_static_entries:
-  - name: .keg.house
-    address: 192.168.1.210
-  - name: vmetrics.house
-    address: 192.168.5.10
-
 dhcp_static_entries:
   - name: colorprinter
     ipaddress: 192.168.1.51
