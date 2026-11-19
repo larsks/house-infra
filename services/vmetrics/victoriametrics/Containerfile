@@ -1,0 +1,1 @@
+FROM docker.io/victoriametrics/victoria-metrics:v1.156.0
