@@ -1,0 +1,21 @@
+name: victoriametrics
+
+volumes:
+  victoriametrics-data:
+
+services:
+  victoriametrics:
+    build:
+      context: .
+      dockerfile: Containerfile
+    volumes:
+      - victoriametrics-data:/victoria-metrics-data
+    ports:
+      - "192.168.5.10:8428:8428"
+    command:
+      - "--retentionPeriod=12"
+      - "--storageDataPath=/victoria-metrics-data"
+      - "--dedup.minScrapeInterval=15s"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8428/health"]
