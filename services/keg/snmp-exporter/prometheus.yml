@@ -1,0 +1,56 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: node-exporter
+    static_configs:
+      - targets:
+          - "node-exporter:9100"
+          - "madhatter:9100"
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: "node-exporter:9100"
+        target_label: instance
+        replacement: "keg"
+
+  - job_name: docker-exporter
+    static_configs:
+      - targets:
+          - "docker-exporter:8080"
+
+  - job_name: snmp-router
+    static_configs:
+      - targets:
+          - "gw.house"
+    params:
+      auth: ["public_v2"]
+      module: ["system", "layer2", "layer3", "ethernet", "host"]
+    metrics_path: /snmp
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: "snmp-exporter:9116"
+
+  - job_name: snmp-switch
+    static_configs:
+      - targets:
+          - "office-sw-0.house"
+          - "office-sw-1.house"
+    params:
+      auth: ["public_v2"]
+      module: ["system", "layer2", "layer3", "ethernet", "entity", "switch_health"]
+    metrics_path: /snmp
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: "snmp-exporter:9116"

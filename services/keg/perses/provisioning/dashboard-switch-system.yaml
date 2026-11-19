@@ -1,0 +1,555 @@
+kind: "Dashboard"
+metadata:
+  name: "switch-system"
+  project: "switches"
+spec:
+  display:
+    name: "Switch system"
+  duration: 1h
+  refreshInterval: 1m
+  panels:
+    load_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "Load (1m, now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: decimal
+              decimalPlaces: 2
+            max: 2
+            thresholds:
+              defaultColor: green
+              steps:
+                - value: 0.8
+                  color: orange
+                  name: "Elevated"
+                - value: 1.2
+                  color: red
+                  name: "Saturated"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (node_load1{instance="office-sw-2.house:9100"})'
+
+    temp_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "CPU temperature (now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: decimal
+              decimalPlaces: 1
+            max: 90
+            thresholds:
+              defaultColor: green
+              steps:
+                - value: 55
+                  color: orange
+                  name: "Warm"
+                - value: 70
+                  color: red
+                  name: "Hot"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (node_thermal_zone_temp{instance="office-sw-2.house:9100"})'
+
+    cpu_usage:
+      kind: Panel
+      spec:
+        display:
+          name: "CPU usage by mode (%)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              label: "%"
+              format:
+                unit: percent
+                decimalPlaces: 1
+              min: 0
+              max: 100
+            visual:
+              display: line
+              lineWidth: 1.5
+              areaOpacity: 0.1
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * avg by (mode) (rate(node_cpu_seconds_total{instance="office-sw-2.house:9100", mode!="idle"}[5m]))'
+                  seriesNameFormat: "{{mode}}"
+
+    load_trend:
+      kind: Panel
+      spec:
+        display:
+          name: "Load average"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (node_load1{instance="office-sw-2.house:9100"})'
+                  seriesNameFormat: "1m"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (node_load5{instance="office-sw-2.house:9100"})'
+                  seriesNameFormat: "5m"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (node_load15{instance="office-sw-2.house:9100"})'
+                  seriesNameFormat: "15m"
+
+    temperature:
+      kind: Panel
+      spec:
+        display:
+          name: "CPU temperature"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              label: "°C"
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (node_thermal_zone_temp{instance="office-sw-2.house:9100"})'
+                  seriesNameFormat: "{{type}}"
+
+    mem_available_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "Memory available (now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: percent
+              decimalPlaces: 1
+            max: 100
+            thresholds:
+              defaultColor: red
+              steps:
+                - value: 10
+                  color: orange
+                  name: "Low"
+                - value: 20
+                  color: green
+                  name: "Healthy"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * max without (job) (node_memory_MemAvailable_bytes{instance="office-sw-2.house:9100"}) / max without (job) (node_memory_MemTotal_bytes{instance="office-sw-2.house:9100"})'
+
+    mem_available_trend:
+      kind: Panel
+      spec:
+        display:
+          name: "Memory available (%)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, min, max]
+            yAxis:
+              show: true
+              label: "%"
+              format:
+                unit: percent
+                decimalPlaces: 1
+              min: 0
+              max: 100
+            thresholds:
+              defaultColor: red
+              steps:
+                - value: 10
+                  color: orange
+                  name: "Low"
+                - value: 20
+                  color: green
+                  name: "Healthy"
+            visual:
+              display: line
+              lineWidth: 1.5
+              areaOpacity: 0.1
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * max without (job) (node_memory_MemAvailable_bytes{instance="office-sw-2.house:9100"}) / max without (job) (node_memory_MemTotal_bytes{instance="office-sw-2.house:9100"})'
+                  seriesNameFormat: "available %"
+
+    mem_overview:
+      kind: Panel
+      spec:
+        display:
+          name: "Memory overview"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (node_memory_MemTotal_bytes{instance="office-sw-2.house:9100"})'
+                  seriesNameFormat: "total"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (node_memory_MemAvailable_bytes{instance="office-sw-2.house:9100"})'
+                  seriesNameFormat: "available"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (node_memory_Cached_bytes{instance="office-sw-2.house:9100"})'
+                  seriesNameFormat: "cached"
+
+    proc_scheduling:
+      kind: Panel
+      spec:
+        display:
+          name: "Process scheduling"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (node_procs_running_total{instance="office-sw-2.house:9100"})'
+                  seriesNameFormat: "running"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (node_procs_blocked_total{instance="office-sw-2.house:9100"})'
+                  seriesNameFormat: "blocked"
+
+    system_activity:
+      kind: Panel
+      spec:
+        display:
+          name: "Context switches & interrupts (per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (rate(node_context_switches_total{instance="office-sw-2.house:9100"}[5m]))'
+                  seriesNameFormat: "context switches/s"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (rate(node_intr_total{instance="office-sw-2.house:9100"}[5m]))'
+                  seriesNameFormat: "interrupts/s"
+
+    filefd_usage:
+      kind: Panel
+      spec:
+        display:
+          name: "File descriptor usage"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (node_filefd_allocated{instance="office-sw-2.house:9100"})'
+                  seriesNameFormat: "allocated"
+
+    process_creation:
+      kind: Panel
+      spec:
+        display:
+          name: "Process creation rate"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (rate(node_forks_total{instance="office-sw-2.house:9100"}[5m]))'
+                  seriesNameFormat: "forks/s"
+
+    uptime:
+      kind: Panel
+      spec:
+        display:
+          name: "Uptime (days)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, min]
+            yAxis:
+              show: true
+              label: "days"
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '(max without (job) (node_time_seconds{instance="office-sw-2.house:9100"}) - max without (job) (node_boot_time_seconds{instance="office-sw-2.house:9100"})) / 86400'
+                  seriesNameFormat: "uptime"
+
+    system_info:
+      kind: Panel
+      spec:
+        display:
+          name: "System info"
+        plugin:
+          kind: Table
+          spec:
+            density: compact
+            columnSettings:
+              - name: __name__
+                hide: true
+              - name: instance
+                hide: true
+              - name: job
+                hide: true
+              - name: value
+                hide: true
+              - name: domainname
+                hide: true
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (node_openwrt_info{instance="office-sw-2.house:9100"}) or max without (job) (node_uname_info{instance="office-sw-2.house:9100"})'
+
+  layouts:
+    - kind: Grid
+      spec:
+        items:
+          - x: 0
+            y: 0
+            width: 8
+            height: 6
+            content:
+              "$ref": "#/spec/panels/load_gauge"
+          - x: 8
+            y: 0
+            width: 16
+            height: 6
+            content:
+              "$ref": "#/spec/panels/temp_gauge"
+          - x: 0
+            y: 6
+            width: 24
+            height: 8
+            content:
+              "$ref": "#/spec/panels/cpu_usage"
+          - x: 0
+            y: 14
+            width: 16
+            height: 8
+            content:
+              "$ref": "#/spec/panels/load_trend"
+          - x: 16
+            y: 14
+            width: 8
+            height: 8
+            content:
+              "$ref": "#/spec/panels/temperature"
+          - x: 0
+            y: 22
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/proc_scheduling"
+          - x: 12
+            y: 22
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/system_activity"
+          - x: 0
+            y: 30
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/filefd_usage"
+          - x: 12
+            y: 30
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/process_creation"
+          - x: 0
+            y: 38
+            width: 8
+            height: 6
+            content:
+              "$ref": "#/spec/panels/mem_available_gauge"
+          - x: 8
+            y: 38
+            width: 16
+            height: 6
+            content:
+              "$ref": "#/spec/panels/mem_available_trend"
+          - x: 0
+            y: 44
+            width: 24
+            height: 8
+            content:
+              "$ref": "#/spec/panels/mem_overview"
+          - x: 0
+            y: 52
+            width: 24
+            height: 6
+            content:
+              "$ref": "#/spec/panels/uptime"
+          - x: 0
+            y: 58
+            width: 24
+            height: 6
+            content:
+              "$ref": "#/spec/panels/system_info"

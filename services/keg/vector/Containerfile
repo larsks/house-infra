@@ -1,0 +1,2 @@
+FROM docker.io/timberio/vector:0.57.0-alpine
+COPY vector.yaml /etc/vector/vector.yaml

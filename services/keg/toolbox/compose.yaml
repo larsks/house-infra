@@ -1,0 +1,11 @@
+services:
+  toolbox:
+    profiles:
+      - toolbox
+    build:
+      context: .
+      dockerfile: Containerfile
+    command: ["sleep", "inf"]
+    init: true
+    networks:
+      - services

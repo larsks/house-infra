@@ -1,0 +1,104 @@
+auths:
+  public_v1:
+    version: 1
+    community: monitor
+  public_v2:
+    version: 2
+    community: monitor
+
+modules:
+  system:
+    walk:
+      - SNMPv2-MIB::system
+      - SNMPv2-MIB::snmp
+  layer3:
+    walk:
+      - TCP-MIB::tcp
+      - UDP-MIB::udp
+      - IP-MIB::ipv4InterfaceTable
+  layer2:
+    walk:
+      - IF-MIB::ifTable
+      - IF-MIB::ifXTable
+    lookups:
+      - source_indexes:
+          - ifIndex
+        lookup: ifAlias
+      - source_indexes:
+          - ifIndex
+        lookup: IF-MIB::ifDescr
+      - source_indexes:
+          - ifIndex
+        lookup: IF-MIB::ifName
+    overrides:
+      ifAlias:
+        ignore: true
+      ifDescr:
+        ignore: true
+      ifName:
+        ignore: true
+      ifType:
+        type: EnumAsInfo
+  ethernet:
+    walk:
+      - EtherLike-MIB::dot3StatsTable
+      - EtherLike-MIB::dot3PauseTable
+    lookups:
+      - source_indexes:
+          - dot3StatsIndex
+        lookup: IF-MIB::ifDescr
+      - source_indexes:
+          - dot3StatsIndex
+        lookup: IF-MIB::ifName
+    overrides:
+      dot3StatsDuplexStatus:
+        type: EnumAsInfo
+  entity:
+    walk:
+      - ENTITY-MIB::entPhysicalTable
+    overrides:
+      entPhysicalDescr:
+        ignore: true
+      entPhysicalMfgName:
+        ignore: true
+      entPhysicalModelName:
+        ignore: true
+      entPhysicalSerialNum:
+        ignore: true
+      entPhysicalFirmwareRev:
+        ignore: true
+      entPhysicalSoftwareRev:
+        ignore: true
+      entPhysicalName:
+        ignore: true
+      entPhysicalClass:
+        type: EnumAsInfo
+  host:
+    walk:
+      - HOST-RESOURCES-MIB::hrStorageTable
+      - HOST-RESOURCES-MIB::hrProcessorTable
+      - HOST-RESOURCES-MIB::hrSystemUptime
+    lookups:
+      - source_indexes:
+          - hrStorageIndex
+        lookup: HOST-RESOURCES-MIB::hrStorageDescr
+    overrides:
+      hrStorageDescr:
+        ignore: true
+      hrStorageType:
+        ignore: true
+  switch_health:
+    walk:
+      - NETGEAR-SWITCHING-MIB::agentSwitchCpuProcessMemFree
+      - NETGEAR-SWITCHING-MIB::agentSwitchCpuProcessMemAvailable
+      - NETGEAR-SWITCHING-MIB::agentSwitchMbufsFree
+      - NETGEAR-SWITCHING-MIB::agentSwitchMbufsUsed
+      - NETGEAR-SWITCHING-MIB::agentSwitchMbufAllocAttempts
+      - NETGEAR-SWITCHING-MIB::agentSwitchMbufAllocFails
+    lookups:
+      - source_indexes:
+          - agentSwitchMbufPrio
+        lookup: agentSwitchMbufClassName
+    overrides:
+      agentSwitchMbufClassName:
+        ignore: true

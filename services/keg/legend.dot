@@ -1,0 +1,11 @@
+digraph legend {
+    legend [shape=none, margin=0, label=<
+        <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="orange" WIDTH="20"></TD><TD ALIGN="LEFT">Metrics</TD></TR>
+        <TR><TD BGCOLOR="lightblue" WIDTH="20"></TD><TD ALIGN="LEFT">Logs</TD></TR>
+        <TR><TD BGCOLOR="red" WIDTH="20"></TD><TD ALIGN="LEFT">Alerts</TD></TR>
+        <TR><TD BGCOLOR="lightgreen" WIDTH="20"></TD><TD ALIGN="LEFT">Certificates</TD></TR>
+        </TABLE>
+    >]
+}

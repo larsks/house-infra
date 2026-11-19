@@ -1,0 +1,27 @@
+services:
+  node-exporter:
+    build:
+      context: .
+      dockerfile: Containerfile
+    privileged: true
+    restart: unless-stopped
+    network_mode: host
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/bin/busybox",
+          "wget",
+          "-q",
+          "--spider",
+          "http://localhost:9100/metrics",
+        ]
+    volumes:
+      - "/proc:/host/proc"
+      - "/sys:/host/sys:ro"
+      - "/:/host/rootfs:ro"
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude"
+      - "^/(host/rootfs/)?(dev|etc|host|proc|run|sys|volume1)($$|/)"

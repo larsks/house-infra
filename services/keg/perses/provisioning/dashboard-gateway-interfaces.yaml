@@ -1,0 +1,218 @@
+kind: "Dashboard"
+metadata:
+  name: "gateway-interfaces"
+  project: "gateway"
+spec:
+  display:
+    name: "Gateway interfaces"
+  duration: 1h
+  refreshInterval: 1m
+  panels:
+    if_status:
+      kind: Panel
+      spec:
+        display:
+          name: "Interface status (up/down)"
+        plugin:
+          kind: Table
+          spec:
+            density: compact
+            columnSettings:
+              - name: ifDescr
+                header: "Interface"
+              - name: __name__
+                hide: true
+              - name: instance
+                hide: true
+              - name: job
+                hide: true
+              - name: ifIndex
+                hide: true
+              - name: ifName
+                hide: true
+              - name: value
+                header: "Status"
+                cellSettings:
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "1"
+                    text: "up"
+                    textColor: "#2e7d32"
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "2"
+                    text: "down"
+                    textColor: "#c62828"
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "3"
+                    text: "testing"
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "4"
+                    text: "unknown"
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "5"
+                    text: "dormant"
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "6"
+                    text: "not present"
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "7"
+                    text: "lower layer down"
+                    textColor: "#c62828"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'ifOperStatus{instance="gw.house", ifDescr=~"eth0|eth1|eth2|eth3|eth4|switch0"}'
+
+    wan_throughput:
+      kind: Panel
+      spec:
+        display:
+          name: "WAN throughput — eth0 (bytes/sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              areaOpacity: 0.1
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (rate(ifHCInOctets{instance="gw.house", ifDescr="eth0"}[5m]))'
+                  seriesNameFormat: "rx"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (rate(ifHCOutOctets{instance="gw.house", ifDescr="eth0"}[5m]))'
+                  seriesNameFormat: "tx"
+
+    lan_throughput:
+      kind: Panel
+      spec:
+        display:
+          name: "LAN & other interfaces throughput (bytes/sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: right
+              mode: table
+              size: small
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max by (ifDescr) (rate(ifHCInOctets{instance="gw.house", ifDescr=~"eth1|eth2|eth3|eth4|switch0"}[5m]))'
+                  seriesNameFormat: "{{ifDescr}} rx"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max by (ifDescr) (rate(ifHCOutOctets{instance="gw.house", ifDescr=~"eth1|eth2|eth3|eth4|switch0"}[5m]))'
+                  seriesNameFormat: "{{ifDescr}} tx"
+
+    if_errors_discards:
+      kind: Panel
+      spec:
+        display:
+          name: "Errors & discards by interface (per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: right
+              mode: table
+              size: small
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum by (ifDescr) (rate(ifInErrors{instance="gw.house", ifDescr=~"eth0|eth1|eth2|eth3|eth4|switch0"}[5m]) + rate(ifOutErrors{instance="gw.house", ifDescr=~"eth0|eth1|eth2|eth3|eth4|switch0"}[5m]))'
+                  seriesNameFormat: "{{ifDescr}} errors"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum by (ifDescr) (rate(ifInDiscards{instance="gw.house", ifDescr=~"eth0|eth1|eth2|eth3|eth4|switch0"}[5m]) + rate(ifOutDiscards{instance="gw.house", ifDescr=~"eth0|eth1|eth2|eth3|eth4|switch0"}[5m]))'
+                  seriesNameFormat: "{{ifDescr}} discards"
+
+  layouts:
+    - kind: Grid
+      spec:
+        items:
+          - x: 0
+            y: 0
+            width: 24
+            height: 6
+            content:
+              "$ref": "#/spec/panels/if_status"
+          - x: 0
+            y: 6
+            width: 24
+            height: 9
+            content:
+              "$ref": "#/spec/panels/wan_throughput"
+          - x: 0
+            y: 15
+            width: 24
+            height: 9
+            content:
+              "$ref": "#/spec/panels/lan_throughput"
+          - x: 0
+            y: 24
+            width: 24
+            height: 9
+            content:
+              "$ref": "#/spec/panels/if_errors_discards"

@@ -1,0 +1,3 @@
+FROM docker.io/prom/node-exporter:v1-distroless
+
+COPY --from=docker.io/busybox:stable-musl /bin/busybox /bin/busybox

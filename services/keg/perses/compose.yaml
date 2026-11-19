@@ -1,0 +1,28 @@
+volumes:
+  perses-data:
+
+services:
+  perses:
+    build:
+      context: .
+      dockerfile: Containerfile
+    command:
+      - --config=/etc/perses/config.yaml
+    environment:
+      - GOGC=50
+      - GOMEMLIMIT=96MiB
+    volumes:
+      - perses-data:/perses
+    networks:
+      - services
+    restart: unless-stopped
+    depends_on:
+      traefik:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.perses.rule=Host(`perses.keg.house`)"
+      - "traefik.http.services.perses.loadbalancer.server.port=8080"
+      - "traefik.http.routers.perses.entrypoints=websecure"
+      - "traefik.http.routers.perses.tls=true"
+      - "traefik.http.routers.perses.tls.certresolver=step-ca"

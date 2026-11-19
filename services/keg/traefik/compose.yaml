@@ -1,0 +1,58 @@
+volumes:
+  traefik-data:
+
+services:
+  traefik:
+    image: docker.io/traefik:v3.7
+    command:
+      - --providers.docker
+      - --providers.docker.exposedbydefault=false
+      - --ping=true
+      - --log.level=INFO
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.step-ca.acme.caServer=https://ca.house:9000/acme/acme/directory
+      - --certificatesresolvers.step-ca.acme.email=traefik@keg.house
+      - --certificatesresolvers.step-ca.acme.storage=/data/acme.json
+      - --certificatesresolvers.step-ca.acme.httpchallenge=true
+      - --certificatesresolvers.step-ca.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.step-ca.acme.caCertificates=/data/house-ca.crt
+    environment:
+      - GOGC=50
+      - GOMEMLIMIT=128MiB
+    volumes:
+      - traefik-data:/data
+      - /run/docker.sock:/run/docker.sock
+    networks:
+      house:
+        ipv4_address: 192.168.1.210
+      services: {}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      step-ca:
+        condition: service_healthy
+
+  whoami:
+    profiles:
+      - whoami
+    image: docker.io/traefik/whoami
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.keg.house`)"
+      - "traefik.http.services.whoami.loadbalancer.server.port=80"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls=true"
+      - "traefik.http.routers.whoami.tls.certresolver=step-ca"
+    restart: unless-stopped
+    depends_on:
+      traefik:
+        condition: service_healthy
+    networks:
+      - services

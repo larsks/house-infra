@@ -1,0 +1,63 @@
+volumes:
+  garage-data:
+
+services:
+  garage:
+    build:
+      context: .
+      dockerfile: Containerfile
+    networks:
+      - services
+    volumes:
+      - garage-data:/data
+    environment:
+      GARAGE_CONFIG_FILE: /config/garage.toml
+      GARAGE_ALLOW_WORLD_READABLE_SECRETS: "true"
+    secrets:
+      - rpc_secret
+      - admin_token
+      - metrics_token
+    command:
+      - /garage
+      - server
+      - --single-node
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/garage", "health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      traefik:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.garage-s3.rule=Host(`s3.garage.keg.house`)"
+      - "traefik.http.routers.garage-s3.service=garage-s3"
+      - "traefik.http.services.garage-s3.loadbalancer.server.port=3900"
+      - "traefik.http.routers.garage-s3.entrypoints=websecure"
+      - "traefik.http.routers.garage-s3.tls=true"
+      - "traefik.http.routers.garage-s3.tls.certresolver=step-ca"
+
+      - "traefik.http.routers.garage-web.rule=Host(`web.garage.keg.house`)"
+      - "traefik.http.routers.garage-web.service=garage-web"
+      - "traefik.http.services.garage-web.loadbalancer.server.port=3902"
+      - "traefik.http.routers.garage-web.entrypoints=websecure"
+      - "traefik.http.routers.garage-web.tls=true"
+      - "traefik.http.routers.garage-web.tls.certresolver=step-ca"
+
+      - "traefik.http.routers.garage-admin.rule=Host(`admin.garage.keg.house`)"
+      - "traefik.http.routers.garage-admin.service=garage-admin"
+      - "traefik.http.services.garage-admin.loadbalancer.server.port=3903"
+      - "traefik.http.routers.garage-admin.entrypoints=websecure"
+      - "traefik.http.routers.garage-admin.tls=true"
+      - "traefik.http.routers.garage-admin.tls.certresolver=step-ca"
+
+secrets:
+  rpc_secret:
+    file: /volume1/docker/services/garage/secrets/rpc_secret
+  admin_token:
+    file: /volume1/docker/services/garage/secrets/admin_token
+  metrics_token:
+    file: /volume1/docker/services/garage/secrets/metrics_token

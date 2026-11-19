@@ -1,0 +1,441 @@
+kind: "Dashboard"
+metadata:
+  name: "syslog-ng"
+  project: "logs"
+spec:
+  display:
+    name: "syslog-ng"
+  duration: 1h
+  refreshInterval: 30s
+  panels:
+    unreachable_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "Unreachable destination workers (now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: decimal
+              decimalPlaces: 0
+            max: 4
+            thresholds:
+              defaultColor: green
+              steps:
+                - value: 1
+                  color: red
+                  name: "Unreachable"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum(syslogng_output_unreachable)'
+
+    dropped_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "Dropped events (5m rate, now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: decimal
+              decimalPlaces: 2
+            max: 10
+            thresholds:
+              defaultColor: green
+              steps:
+                - value: 0.1
+                  color: red
+                  name: "Dropping"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum(rate(syslogng_output_events_total{result="dropped"}[5m]))'
+
+    input_rate:
+      kind: Panel
+      spec:
+        display:
+          name: "Input events (per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum by (id, transport) (rate(syslogng_input_events_total[5m]))'
+                  seriesNameFormat: "{{id}} ({{transport}})"
+
+    output_rate_by_result:
+      kind: Panel
+      spec:
+        display:
+          name: "Output events by result (per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum by (driver, result) (rate(syslogng_output_events_total[5m]))'
+                  seriesNameFormat: "{{driver}} {{result}}"
+
+    output_retries:
+      kind: Panel
+      spec:
+        display:
+          name: "Output retries (per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum by (driver) (rate(syslogng_output_event_retries_total[5m]))'
+                  seriesNameFormat: "{{driver}}"
+
+    batch_timeouts:
+      kind: Panel
+      spec:
+        display:
+          name: "Output batch timeouts (per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum by (driver) (rate(syslogng_output_batch_timedout_total[5m]))'
+                  seriesNameFormat: "{{driver}}"
+
+    memory_queue_utilization:
+      kind: Panel
+      spec:
+        display:
+          name: "Memory queue utilization (%)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: percent
+                decimalPlaces: 1
+              min: 0
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * sum by (driver, id) (syslogng_memory_queue_events) / sum by (driver, id) (syslogng_memory_queue_capacity)'
+                  seriesNameFormat: "{{driver}} ({{id}})"
+
+    event_processing_latency:
+      kind: Panel
+      spec:
+        display:
+          name: "Event processing latency (p99)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: seconds
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'histogram_quantile(0.99, sum by (le) (rate(syslogng_event_processing_latency_seconds_bucket[5m])))'
+                  seriesNameFormat: "p99"
+
+    output_request_latency:
+      kind: Panel
+      spec:
+        display:
+          name: "Output request latency (p99)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: seconds
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'histogram_quantile(0.99, sum by (le, driver) (rate(syslogng_output_request_latency_seconds_bucket[5m])))'
+                  seriesNameFormat: "{{driver}}"
+
+    socket_drops:
+      kind: Panel
+      spec:
+        display:
+          name: "Dropped/rejected packets & connections (per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum by (address, transport) (rate(syslogng_socket_receive_dropped_packets_total[5m]))'
+                  seriesNameFormat: "{{address}} ({{transport}}) recv drops"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum by (address, transport) (rate(syslogng_socket_rejected_connections_total[5m]))'
+                  seriesNameFormat: "{{address}} ({{transport}}) rejected conns"
+
+    input_window_full:
+      kind: Panel
+      spec:
+        display:
+          name: "Input window full (backpressure, per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum by (id, transport) (rate(syslogng_input_window_full_total[5m]))'
+                  seriesNameFormat: "{{id}} ({{transport}})"
+
+    memory_usage:
+      kind: Panel
+      spec:
+        display:
+          name: "Internal memory usage"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'syslogng_events_allocated_bytes'
+                  seriesNameFormat: "events allocated"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum(syslogng_scratch_buffers_bytes)'
+                  seriesNameFormat: "scratch buffers"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum by (driver, id) (syslogng_memory_queue_memory_usage_bytes)'
+                  seriesNameFormat: "{{driver}} queue ({{id}})"
+
+  layouts:
+    - kind: Grid
+      spec:
+        items:
+          - x: 0
+            y: 0
+            width: 6
+            height: 6
+            content:
+              "$ref": "#/spec/panels/unreachable_gauge"
+          - x: 6
+            y: 0
+            width: 6
+            height: 6
+            content:
+              "$ref": "#/spec/panels/dropped_gauge"
+          - x: 12
+            y: 0
+            width: 12
+            height: 6
+            content:
+              "$ref": "#/spec/panels/input_rate"
+          - x: 0
+            y: 6
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/output_rate_by_result"
+          - x: 12
+            y: 6
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/memory_queue_utilization"
+          - x: 0
+            y: 14
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/output_retries"
+          - x: 12
+            y: 14
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/batch_timeouts"
+          - x: 0
+            y: 22
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/event_processing_latency"
+          - x: 12
+            y: 22
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/output_request_latency"
+          - x: 0
+            y: 30
+            width: 24
+            height: 8
+            content:
+              "$ref": "#/spec/panels/socket_drops"
+          - x: 0
+            y: 38
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/input_window_full"
+          - x: 12
+            y: 38
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/memory_usage"

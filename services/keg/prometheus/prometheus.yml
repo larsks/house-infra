@@ -1,0 +1,92 @@
+global:
+  scrape_interval: 15s
+  external_labels:
+    site: house
+
+remote_write:
+  - url: "http://192.168.5.10:8428/api/v1/write"
+
+rule_files:
+  - "/etc/prometheus/rules/*.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: node-exporter
+    static_configs:
+      - targets:
+          - "keg.house:9100"
+          - "madhatter.house:9100"
+          - "vmetrics.house:9100"
+
+  - job_name: node-exporter-hpe1920
+    static_configs:
+      - targets:
+          - "office-sw-2.house:9100"
+    # netclass is excluded: it walks every interface on the switch (34 of
+    # them) doing dozens of small sysfs reads each, which takes ~1s per
+    # scrape on the switch's slow single-core CPU and was causing periodic
+    # load spikes unrelated to actual traffic.
+    #
+    # Note: the param key must be "collect", not "collect[]" -- Prometheus
+    # sends the YAML key verbatim as the query param name (repeated once per
+    # list item), and this exporter's ucode script only recognizes a param
+    # literally named "collect". "collect[]" is silently ignored, which
+    # means every collector (including netclass) runs regardless.
+    params:
+      collect:
+        - conntrack
+        - cpu
+        - entropy
+        - filefd
+        - loadavg
+        - meminfo
+        - netdev
+        - openwrt
+        - thermal
+        - time
+        - uname
+
+  - job_name: docker-exporter
+    static_configs:
+      - targets:
+          - "docker-exporter:8080"
+
+  - job_name: syslog
+    static_configs:
+      - targets:
+          - "syslog-exporter:9577"
+
+  - job_name: loki
+    static_configs:
+      - targets:
+          - "loki:3100"
+
+  - job_name: garage
+    bearer_token_file: /run/secrets/garage_metrics_token
+    static_configs:
+      - targets:
+          - "garage:3903"
+
+  - job_name: snmp-router
+    static_configs:
+      - targets:
+          - "gw.house"
+    params:
+      auth: ["public_v2"]
+      module: ["system", "layer2", "layer3", "ethernet", "host"]
+    metrics_path: /snmp
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: "snmp-exporter:9116"

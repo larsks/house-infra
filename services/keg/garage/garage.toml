@@ -1,0 +1,25 @@
+metadata_dir = "/data/meta"
+data_dir = "/data/data"
+db_engine = "sqlite"
+
+replication_factor = 1
+
+rpc_bind_addr = "[::]:3901"
+rpc_public_addr = "127.0.0.1:3901"
+rpc_secret_file = "/run/secrets/rpc_secret"
+
+[s3_api]
+s3_region = "garage"
+api_bind_addr = "[::]:3900"
+root_domain = ".s3.garage.keg.house"
+public_endpoint = "http://s3.garage.keg.house:3900"
+
+[s3_web]
+bind_addr = "[::]:3902"
+root_domain = ".web.garage.keg.house"
+index = "index.html"
+
+[admin]
+api_bind_addr = "[::]:3903"
+admin_token_file = "/run/secrets/admin_token"
+metrics_token_file = "/run/secrets/metrics_token"

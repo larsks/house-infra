@@ -1,0 +1,224 @@
+kind: "Dashboard"
+metadata:
+  name: "keg-memory"
+  project: "keg"
+spec:
+  display:
+    name: "Keg memory"
+  duration: 1h
+  refreshInterval: 1m
+  panels:
+    mem_available_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "Memory available (now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: percent
+              decimalPlaces: 1
+            max: 100
+            thresholds:
+              defaultColor: red
+              steps:
+                - value: 10
+                  color: orange
+                  name: "Low"
+                - value: 20
+                  color: green
+                  name: "Healthy"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * node_memory_MemAvailable_bytes{instance="keg.house:9100"} / node_memory_MemTotal_bytes{instance="keg.house:9100"}'
+
+    mem_available_trend:
+      kind: Panel
+      spec:
+        display:
+          name: "Memory available (%)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, min, max]
+            yAxis:
+              show: true
+              label: "%"
+              format:
+                unit: percent
+                decimalPlaces: 1
+              min: 0
+              max: 100
+            thresholds:
+              defaultColor: red
+              steps:
+                - value: 10
+                  color: orange
+                  name: "Low"
+                - value: 20
+                  color: green
+                  name: "Healthy"
+            visual:
+              display: line
+              lineWidth: 1.5
+              areaOpacity: 0.1
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * node_memory_MemAvailable_bytes{instance="keg.house:9100"} / node_memory_MemTotal_bytes{instance="keg.house:9100"}'
+                  seriesNameFormat: "available %"
+
+    mem_overview:
+      kind: Panel
+      spec:
+        display:
+          name: "Memory overview"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_memory_MemTotal_bytes{instance="keg.house:9100"}'
+                  seriesNameFormat: "total"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_memory_MemAvailable_bytes{instance="keg.house:9100"}'
+                  seriesNameFormat: "available"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_memory_Cached_bytes{instance="keg.house:9100"}'
+                  seriesNameFormat: "cached"
+
+    swap_bytes:
+      kind: Panel
+      spec:
+        display:
+          name: "Swap used"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_memory_SwapTotal_bytes{instance="keg.house:9100"} - node_memory_SwapFree_bytes{instance="keg.house:9100"}'
+                  seriesNameFormat: "swap used"
+
+    swap_activity:
+      kind: Panel
+      spec:
+        display:
+          name: "Swap activity (pages/sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              label: "pages/sec"
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_vmstat_pswpin{instance="keg.house:9100"}[5m])'
+                  seriesNameFormat: "swap in"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_vmstat_pswpout{instance="keg.house:9100"}[5m])'
+                  seriesNameFormat: "swap out"
+
+  layouts:
+    - kind: Grid
+      spec:
+        items:
+          - x: 0
+            y: 0
+            width: 8
+            height: 6
+            content:
+              "$ref": "#/spec/panels/mem_available_gauge"
+          - x: 8
+            y: 0
+            width: 16
+            height: 6
+            content:
+              "$ref": "#/spec/panels/mem_available_trend"
+          - x: 0
+            y: 6
+            width: 16
+            height: 12
+            content:
+              "$ref": "#/spec/panels/mem_overview"
+          - x: 16
+            y: 6
+            width: 8
+            height: 12
+            content:
+              "$ref": "#/spec/panels/swap_bytes"
+          - x: 0
+            y: 18
+            width: 24
+            height: 6
+            content:
+              "$ref": "#/spec/panels/swap_activity"

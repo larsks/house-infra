@@ -1,0 +1,12 @@
+kind: GlobalDatasource
+metadata:
+  name: loki
+spec:
+  default: true
+  plugin:
+    kind: LokiDatasource
+    spec:
+      proxy:
+        kind: HTTPProxy
+        spec:
+          url: http://loki:3100

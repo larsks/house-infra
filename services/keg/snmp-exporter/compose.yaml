@@ -1,0 +1,27 @@
+volumes:
+  snmp-exporter-config:
+
+services:
+  snmp-generator:
+    build:
+      context: snmp-generator
+      dockerfile: Containerfile
+    command: ["generate", "-o", "/config/snmp.yaml"]
+    volumes:
+      - "snmp-exporter-config:/config"
+    networks:
+      - services
+
+  snmp-exporter:
+    image: quay.io/prometheus/snmp-exporter:v0.31.0
+    restart: unless-stopped
+    depends_on:
+      snmp-generator:
+        condition: service_completed_successfully
+    volumes:
+      - "snmp-exporter-config:/config"
+    command: ["--config.file=/config/snmp.yaml"]
+    networks:
+      - services
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9116/metrics"]

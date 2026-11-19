@@ -1,0 +1,481 @@
+kind: "Dashboard"
+metadata:
+  name: "node-system"
+  project: "system"
+spec:
+  display:
+    name: "Node system"
+  duration: 1h
+  refreshInterval: 1m
+  variables:
+    - kind: "ListVariable"
+      spec:
+        name: "instance"
+        display:
+          name: "Host"
+        allowAllValue: false
+        allowMultiple: false
+        defaultValue: "keg.house:9100"
+        plugin:
+          kind: "PrometheusLabelValuesVariable"
+          spec:
+            labelName: "instance"
+            matchers:
+              - 'node_uname_info{job="node-exporter"}'
+  panels:
+    load_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "Load (1m, now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: decimal
+              decimalPlaces: 2
+            max: 4
+            thresholds:
+              defaultColor: green
+              steps:
+                - value: 2
+                  color: orange
+                  name: "Elevated"
+                - value: 3
+                  color: red
+                  name: "Saturated"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_load1{instance="$instance"}'
+
+    cpu_usage:
+      kind: Panel
+      spec:
+        display:
+          name: "CPU usage by mode (%)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              label: "%"
+              format:
+                unit: percent
+                decimalPlaces: 1
+              min: 0
+              max: 100
+            visual:
+              display: line
+              lineWidth: 1.5
+              areaOpacity: 0.1
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * avg by (mode) (rate(node_cpu_seconds_total{instance="$instance", mode!="idle"}[5m]))'
+                  seriesNameFormat: "{{mode}}"
+
+    load_trend:
+      kind: Panel
+      spec:
+        display:
+          name: "Load average"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_load1{instance="$instance"}'
+                  seriesNameFormat: "1m"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_load5{instance="$instance"}'
+                  seriesNameFormat: "5m"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_load15{instance="$instance"}'
+                  seriesNameFormat: "15m"
+
+    mem_available_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "Memory available (now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: percent
+              decimalPlaces: 1
+            max: 100
+            thresholds:
+              defaultColor: red
+              steps:
+                - value: 10
+                  color: orange
+                  name: "Low"
+                - value: 20
+                  color: green
+                  name: "Healthy"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * node_memory_MemAvailable_bytes{instance="$instance"} / node_memory_MemTotal_bytes{instance="$instance"}'
+
+    mem_overview:
+      kind: Panel
+      spec:
+        display:
+          name: "Memory overview"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_memory_MemTotal_bytes{instance="$instance"}'
+                  seriesNameFormat: "total"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_memory_MemAvailable_bytes{instance="$instance"}'
+                  seriesNameFormat: "available"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_memory_Cached_bytes{instance="$instance"}'
+                  seriesNameFormat: "cached"
+
+    swap_bytes:
+      kind: Panel
+      spec:
+        display:
+          name: "Swap used"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_memory_SwapTotal_bytes{instance="$instance"} - node_memory_SwapFree_bytes{instance="$instance"}'
+                  seriesNameFormat: "swap used"
+
+    network_throughput:
+      kind: Panel
+      spec:
+        display:
+          name: "Network throughput (bytes/sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_network_receive_bytes_total{instance="$instance", device!~"lo|docker.*|veth.*|br-.*"}[5m])'
+                  seriesNameFormat: "{{device}} receive"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_network_transmit_bytes_total{instance="$instance", device!~"lo|docker.*|veth.*|br-.*"}[5m])'
+                  seriesNameFormat: "{{device}} transmit"
+
+    network_errors:
+      kind: Panel
+      spec:
+        display:
+          name: "Network errors & drops (per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_network_receive_errs_total{instance="$instance", device!~"lo|docker.*|veth.*|br-.*"}[5m])'
+                  seriesNameFormat: "{{device}} receive errors"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_network_transmit_errs_total{instance="$instance", device!~"lo|docker.*|veth.*|br-.*"}[5m])'
+                  seriesNameFormat: "{{device}} transmit errors"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_network_receive_drop_total{instance="$instance", device!~"lo|docker.*|veth.*|br-.*"}[5m])'
+                  seriesNameFormat: "{{device}} receive drops"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_network_transmit_drop_total{instance="$instance", device!~"lo|docker.*|veth.*|br-.*"}[5m])'
+                  seriesNameFormat: "{{device}} transmit drops"
+
+    proc_scheduling:
+      kind: Panel
+      spec:
+        display:
+          name: "Process scheduling"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_procs_running{instance="$instance"}'
+                  seriesNameFormat: "running"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_procs_blocked{instance="$instance"}'
+                  seriesNameFormat: "blocked"
+
+    system_activity:
+      kind: Panel
+      spec:
+        display:
+          name: "Context switches & interrupts (per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_context_switches_total{instance="$instance"}[5m])'
+                  seriesNameFormat: "context switches/s"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_intr_total{instance="$instance"}[5m])'
+                  seriesNameFormat: "interrupts/s"
+
+    filefd_usage:
+      kind: Panel
+      spec:
+        display:
+          name: "File descriptor usage"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_filefd_allocated{instance="$instance"}'
+                  seriesNameFormat: "allocated"
+
+  layouts:
+    - kind: Grid
+      spec:
+        items:
+          - x: 0
+            y: 0
+            width: 8
+            height: 6
+            content:
+              "$ref": "#/spec/panels/load_gauge"
+          - x: 8
+            y: 0
+            width: 16
+            height: 6
+            content:
+              "$ref": "#/spec/panels/cpu_usage"
+          - x: 0
+            y: 6
+            width: 24
+            height: 6
+            content:
+              "$ref": "#/spec/panels/load_trend"
+          - x: 0
+            y: 12
+            width: 8
+            height: 6
+            content:
+              "$ref": "#/spec/panels/mem_available_gauge"
+          - x: 8
+            y: 12
+            width: 16
+            height: 6
+            content:
+              "$ref": "#/spec/panels/mem_overview"
+          - x: 0
+            y: 18
+            width: 24
+            height: 6
+            content:
+              "$ref": "#/spec/panels/swap_bytes"
+          - x: 0
+            y: 24
+            width: 16
+            height: 8
+            content:
+              "$ref": "#/spec/panels/network_throughput"
+          - x: 16
+            y: 24
+            width: 8
+            height: 8
+            content:
+              "$ref": "#/spec/panels/network_errors"
+          - x: 0
+            y: 32
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/proc_scheduling"
+          - x: 12
+            y: 32
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/system_activity"
+          - x: 0
+            y: 40
+            width: 24
+            height: 6
+            content:
+              "$ref": "#/spec/panels/filefd_usage"

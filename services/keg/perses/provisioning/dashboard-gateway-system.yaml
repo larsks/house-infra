@@ -1,0 +1,240 @@
+kind: "Dashboard"
+metadata:
+  name: "gateway-system"
+  project: "gateway"
+spec:
+  display:
+    name: "Gateway system"
+  duration: 1h
+  refreshInterval: 1m
+  panels:
+    cpu_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "CPU load (avg, now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: percent
+              decimalPlaces: 1
+            max: 100
+            thresholds:
+              defaultColor: green
+              steps:
+                - value: 70
+                  color: orange
+                  name: "Elevated"
+                - value: 90
+                  color: red
+                  name: "Saturated"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'avg without (job, hrDeviceIndex) (hrProcessorLoad{instance="gw.house"})'
+
+    mem_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "Memory used (now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: percent
+              decimalPlaces: 1
+            max: 100
+            thresholds:
+              defaultColor: green
+              steps:
+                - value: 70
+                  color: orange
+                  name: "Elevated"
+                - value: 90
+                  color: red
+                  name: "Saturated"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * max without (job) (hrStorageUsed{instance="gw.house", hrStorageDescr="Physical memory"}) / max without (job) (hrStorageSize{instance="gw.house", hrStorageDescr="Physical memory"})'
+
+    cpu_trend:
+      kind: Panel
+      spec:
+        display:
+          name: "CPU load by core (%)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              label: "%"
+              format:
+                unit: percent
+                decimalPlaces: 1
+              min: 0
+              max: 100
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (hrProcessorLoad{instance="gw.house"})'
+                  seriesNameFormat: "core {{hrDeviceIndex}}"
+
+    mem_trend:
+      kind: Panel
+      spec:
+        display:
+          name: "Memory overview"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (hrStorageSize{instance="gw.house", hrStorageDescr="Physical memory"} * hrStorageAllocationUnits{instance="gw.house", hrStorageDescr="Physical memory"})'
+                  seriesNameFormat: "total"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (hrStorageUsed{instance="gw.house", hrStorageDescr="Physical memory"} * hrStorageAllocationUnits{instance="gw.house", hrStorageDescr="Physical memory"})'
+                  seriesNameFormat: "used"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (hrStorageUsed{instance="gw.house", hrStorageDescr="Cached memory"} * hrStorageAllocationUnits{instance="gw.house", hrStorageDescr="Cached memory"})'
+                  seriesNameFormat: "cached"
+
+    uptime:
+      kind: Panel
+      spec:
+        display:
+          name: "Uptime (days)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, min]
+            yAxis:
+              show: true
+              label: "days"
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (hrSystemUptime{instance="gw.house"}) / 8640000'
+                  seriesNameFormat: "uptime"
+
+    system_info:
+      kind: Panel
+      spec:
+        display:
+          name: "System info"
+        plugin:
+          kind: Table
+          spec:
+            density: compact
+            columnSettings:
+              - name: __name__
+                hide: true
+              - name: instance
+                hide: true
+              - name: job
+                hide: true
+              - name: value
+                hide: true
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max without (job) (sysDescr{instance="gw.house"}) or max without (job) (sysName{instance="gw.house"})'
+
+  layouts:
+    - kind: Grid
+      spec:
+        items:
+          - x: 0
+            y: 0
+            width: 8
+            height: 6
+            content:
+              "$ref": "#/spec/panels/cpu_gauge"
+          - x: 8
+            y: 0
+            width: 8
+            height: 6
+            content:
+              "$ref": "#/spec/panels/mem_gauge"
+          - x: 0
+            y: 6
+            width: 24
+            height: 8
+            content:
+              "$ref": "#/spec/panels/cpu_trend"
+          - x: 0
+            y: 14
+            width: 24
+            height: 8
+            content:
+              "$ref": "#/spec/panels/mem_trend"
+          - x: 0
+            y: 22
+            width: 24
+            height: 6
+            content:
+              "$ref": "#/spec/panels/uptime"
+          - x: 0
+            y: 28
+            width: 24
+            height: 6
+            content:
+              "$ref": "#/spec/panels/system_info"

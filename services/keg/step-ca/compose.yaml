@@ -1,0 +1,44 @@
+volumes:
+  step-data:
+
+services:
+  step-ca:
+    image: docker.io/smallstep/step-ca:0.30.2
+    restart: unless-stopped
+    ports:
+      - 9000:9000
+    environment:
+      DOCKER_STEPCA_INIT_NAME: "Odd Bit"
+      DOCKER_STEPCA_INIT_DNS_NAMES: "localhost,ca.house,keg.house"
+      DOCKER_STEPCA_INIT_ACME: "true"
+      DOCKER_STEPCA_INIT_REMOTE_MANAGEMENT: "false"
+      DOCKER_STEPCA_INIT_PROVISIONER_NAME: "servers"
+    volumes:
+      - "step-data:/home/step"
+    # The step-ca docker image has no DOCKER_STEPCA_INIT_* variable for
+    # certificate lifetime, so we patch it into ca.json ourselves. This runs
+    # on every start: it's a no-op once already patched, and it runs after
+    # the image's own entrypoint has performed first-time init (which only
+    # happens when ca.json doesn't yet exist).
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -euo pipefail
+        jq '
+          .authority.claims.defaultTLSCertDuration = "168h" |
+          .authority.claims.maxTLSCertDuration = "2160h"
+        ' "$$CONFIGPATH" > "$$CONFIGPATH.tmp"
+        mv "$$CONFIGPATH.tmp" "$$CONFIGPATH"
+        exec step-ca --password-file "$$PWDPATH" "$$CONFIGPATH"
+
+    healthcheck:
+      test: ["CMD", "step", "ca", "health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      services:
+        aliases:
+          - ca.house

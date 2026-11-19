@@ -1,0 +1,20 @@
+groups:
+  - name: host-resources
+    rules:
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes{job="node-exporter", instance="keg"} / node_memory_MemTotal_bytes{job="node-exporter", instance="keg"})) * 100 > 60
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: 'Memory usage on {{ $labels.instance }} is {{ printf "%.1f" $value }}%, above the 60% threshold.'
+
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes{job="node-exporter", fstype!="tmpfs", instance="keg"} / node_filesystem_size_bytes{job="node-exporter", fstype!="tmpfs", instance="keg"}) * 100 < 40
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }} ({{ $labels.mountpoint }})"
+          description: 'Available disk space on {{ $labels.instance }} mountpoint {{ $labels.mountpoint }} is {{ printf "%.1f" $value }}%, below the 40% threshold.'

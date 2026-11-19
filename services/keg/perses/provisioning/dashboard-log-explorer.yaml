@@ -1,0 +1,54 @@
+kind: "Dashboard"
+metadata:
+  name: "container-logs"
+  project: "keg"
+spec:
+  display:
+    name: "Container logs"
+  duration: 1h
+  refreshInterval: 30s
+
+  variables:
+    - kind: ListVariable
+      spec:
+        name: container
+        display:
+          name: "Container"
+        allowMultiple: false
+        allowAllValue: true
+        plugin:
+          kind: LokiLabelValuesVariable
+          spec:
+            labelName: container
+
+  panels:
+    container_logs:
+      kind: Panel
+      spec:
+        display:
+          name: "Container logs"
+        plugin:
+          kind: LogsTable
+          spec:
+            showTime: true
+            allowWrap: false
+            enableDetails: true
+        queries:
+          - kind: LogQuery
+            spec:
+              plugin:
+                kind: LokiLogQuery
+                spec:
+                  query: '{container=~"$container"}'
+                  direction: backward
+
+  layouts:
+    - kind: Grid
+      spec:
+        items:
+          - x: 0
+            y: 0
+            width: 24
+            height: 24
+            content:
+              "$ref": "#/spec/panels/container_logs"

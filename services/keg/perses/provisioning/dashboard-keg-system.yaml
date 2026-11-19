@@ -1,0 +1,525 @@
+kind: "Dashboard"
+metadata:
+  name: "keg-system"
+  project: "keg"
+spec:
+  display:
+    name: "Keg system"
+  duration: 1h
+  refreshInterval: 1m
+  panels:
+    load_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "Load (1m, now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: decimal
+              decimalPlaces: 2
+            max: 4
+            thresholds:
+              defaultColor: green
+              steps:
+                - value: 2
+                  color: orange
+                  name: "Elevated"
+                - value: 3
+                  color: red
+                  name: "Saturated"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_load1{instance="keg.house:9100"}'
+
+    cpu_usage:
+      kind: Panel
+      spec:
+        display:
+          name: "CPU usage by mode (%)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              label: "%"
+              format:
+                unit: percent
+                decimalPlaces: 1
+              min: 0
+              max: 100
+            visual:
+              display: line
+              lineWidth: 1.5
+              areaOpacity: 0.1
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * avg by (mode) (rate(node_cpu_seconds_total{instance="keg.house:9100", mode!="idle"}[5m]))'
+                  seriesNameFormat: "{{mode}}"
+
+    load_trend:
+      kind: Panel
+      spec:
+        display:
+          name: "Load average"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_load1{instance="keg.house:9100"}'
+                  seriesNameFormat: "1m"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_load5{instance="keg.house:9100"}'
+                  seriesNameFormat: "5m"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_load15{instance="keg.house:9100"}'
+                  seriesNameFormat: "15m"
+
+    temperature:
+      kind: Panel
+      spec:
+        display:
+          name: "CPU temperature"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              label: "°C"
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_hwmon_temp_celsius{instance="keg.house:9100"}'
+                  seriesNameFormat: "{{sensor}}"
+
+    cooling_state:
+      kind: Panel
+      spec:
+        display:
+          name: "Cooling device throttle state"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_cooling_device_cur_state{instance="keg.house:9100"}'
+                  seriesNameFormat: "{{type}} {{name}}"
+
+    disk_throughput:
+      kind: Panel
+      spec:
+        display:
+          name: "Disk throughput (bytes/sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_disk_read_bytes_total{instance="keg.house:9100", device=~"sda|sdb"}[5m])'
+                  seriesNameFormat: "{{device}} read"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_disk_written_bytes_total{instance="keg.house:9100", device=~"sda|sdb"}[5m])'
+                  seriesNameFormat: "{{device}} write"
+
+    disk_busy:
+      kind: Panel
+      spec:
+        display:
+          name: "Disk busy (%)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: percent
+                decimalPlaces: 1
+              min: 0
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * rate(node_disk_io_time_seconds_total{instance="keg.house:9100", device=~"sda|sdb"}[5m])'
+                  seriesNameFormat: "{{device}}"
+
+    network_throughput:
+      kind: Panel
+      spec:
+        display:
+          name: "Network throughput (eth0, bytes/sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_network_receive_bytes_total{instance="keg.house:9100", device="eth0"}[5m])'
+                  seriesNameFormat: "receive"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_network_transmit_bytes_total{instance="keg.house:9100", device="eth0"}[5m])'
+                  seriesNameFormat: "transmit"
+
+    network_errors:
+      kind: Panel
+      spec:
+        display:
+          name: "Network errors & drops (eth0, per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_network_receive_errs_total{instance="keg.house:9100", device="eth0"}[5m])'
+                  seriesNameFormat: "receive errors"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_network_transmit_errs_total{instance="keg.house:9100", device="eth0"}[5m])'
+                  seriesNameFormat: "transmit errors"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_network_receive_drop_total{instance="keg.house:9100", device="eth0"}[5m])'
+                  seriesNameFormat: "receive drops"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_network_transmit_drop_total{instance="keg.house:9100", device="eth0"}[5m])'
+                  seriesNameFormat: "transmit drops"
+
+    proc_scheduling:
+      kind: Panel
+      spec:
+        display:
+          name: "Process scheduling"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_procs_running{instance="keg.house:9100"}'
+                  seriesNameFormat: "running"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_procs_blocked{instance="keg.house:9100"}'
+                  seriesNameFormat: "blocked"
+
+    system_activity:
+      kind: Panel
+      spec:
+        display:
+          name: "Context switches & interrupts (per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_context_switches_total{instance="keg.house:9100"}[5m])'
+                  seriesNameFormat: "context switches/s"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_intr_total{instance="keg.house:9100"}[5m])'
+                  seriesNameFormat: "interrupts/s"
+
+    process_creation:
+      kind: Panel
+      spec:
+        display:
+          name: "Process creation rate"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_forks_total{instance="keg.house:9100"}[5m])'
+                  seriesNameFormat: "forks/s"
+
+    filefd_usage:
+      kind: Panel
+      spec:
+        display:
+          name: "File descriptor usage"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_filefd_allocated{instance="keg.house:9100"}'
+                  seriesNameFormat: "allocated"
+
+  layouts:
+    - kind: Grid
+      spec:
+        items:
+          - x: 0
+            y: 0
+            width: 8
+            height: 6
+            content:
+              "$ref": "#/spec/panels/load_gauge"
+          - x: 8
+            y: 0
+            width: 16
+            height: 6
+            content:
+              "$ref": "#/spec/panels/cpu_usage"
+          - x: 0
+            y: 6
+            width: 24
+            height: 6
+            content:
+              "$ref": "#/spec/panels/load_trend"
+          - x: 0
+            y: 12
+            width: 16
+            height: 8
+            content:
+              "$ref": "#/spec/panels/temperature"
+          - x: 16
+            y: 12
+            width: 8
+            height: 8
+            content:
+              "$ref": "#/spec/panels/cooling_state"
+          - x: 0
+            y: 20
+            width: 16
+            height: 8
+            content:
+              "$ref": "#/spec/panels/disk_throughput"
+          - x: 16
+            y: 20
+            width: 8
+            height: 8
+            content:
+              "$ref": "#/spec/panels/disk_busy"
+          - x: 0
+            y: 28
+            width: 16
+            height: 8
+            content:
+              "$ref": "#/spec/panels/network_throughput"
+          - x: 16
+            y: 28
+            width: 8
+            height: 8
+            content:
+              "$ref": "#/spec/panels/network_errors"
+          - x: 0
+            y: 36
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/proc_scheduling"
+          - x: 12
+            y: 36
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/system_activity"
+          - x: 0
+            y: 44
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/filefd_usage"
+          - x: 12
+            y: 44
+            width: 12
+            height: 8
+            content:
+              "$ref": "#/spec/panels/process_creation"
