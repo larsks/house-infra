@@ -1,0 +1,39 @@
+- name: Ensure gpg is available
+  ansible.builtin.package:
+    name: gnupg
+    state: present
+
+- name: Ensure conflicting packages are absent
+  ansible.builtin.package:
+    name: "{{ docker_excluded_packages }}"
+    state: absent
+
+- name: Create keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Add docker gpg key
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/debian/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: "0644"
+
+- name: Add docker repository
+  ansible.builtin.apt_repository:
+    repo: deb [signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian trixie stable
+    state: present
+
+- name: Ensure docker packages are installed
+  ansible.builtin.package:
+    name: "{{ docker_packages }}"
+    state: present
+
+- name: Enable docker service
+  ansible.builtin.systemd_service:
+    name: docker
+    enabled: true
+    state: started

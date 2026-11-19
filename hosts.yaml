@@ -24,3 +24,9 @@ routers:
       hosts:
         gw.house:
           ansible_user: ubnt
+external:
+  hosts:
+    vmetrics.oddbit.com:
+      ansible_user: larsks
+      ansible_become: true
+      ansible_python_interpreter: /usr/bin/python3
