@@ -1,0 +1,7 @@
+- name: Configure wireguard
+  ansible.builtin.import_role:
+    name: wireguard
+
+- name: Configure wireguard
+  ansible.builtin.import_role:
+    name: docker
