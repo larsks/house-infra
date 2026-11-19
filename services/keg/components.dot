@@ -1,0 +1,61 @@
+digraph {
+    node [style="filled"]
+
+    # container services
+    alertmanager [color="red", fillcolor="red"]
+    traefik [color="lightgreen", fillcolor="lightgreen"]
+    "step-ca" [color="lightgreen", fillcolor="lightgreen"]
+    prometheus [color=orange, fillcolor=orange]
+    perses [color=orange, fillcolor=orange]
+    "docker-exporter" [color=orange, fillcolor=orange]
+    "node-exporter" [color=orange, fillcolor=orange]
+    "snmp-exporter" [color=orange, fillcolor=orange]
+    "snmp-generator" [color=orange, fillcolor=orange]
+    syslog [color=lightblue, fillcolor=lightblue]
+    "syslog-exporter" [color=orange, fillcolor=orange]
+    vector [color=lightblue, fillcolor=lightblue]
+    loki [color=lightblue, fillcolor=lightblue]
+    victoriametrics [color=orange]
+
+    # external services
+    pushover [shape=house, color=red, fillcolor=red]
+    docker [shape=invhouse]
+    switches [shape=invhouse]
+    routers [shape=invhouse]
+    hosts [shape=invhouse]
+
+    traefik -> "step-ca"
+    "step-ca" -> traefik
+    alertmanager -> traefik
+    garage -> traefik
+    perses -> traefik
+    prometheus -> traefik
+    loki -> traefik
+
+    syslog -> loki [color=lightblue]
+    vector -> loki [color=lightblue]
+    docker -> vector [color=lightblue]
+    syslog -> "syslog-exporter" [color=orange]
+
+    alertmanager -> vector [color=red]
+    prometheus -> alertmanager [color=red]
+    prometheus -> perses [color=orange]
+    alertmanager -> pushover [color=red]
+
+    switches -> "node-exporter" [color=orange]
+    hosts -> "node-exporter" [color=orange]
+    hosts -> syslog [color=lightblue]
+    switches -> syslog [color=lightblue]
+    routers -> syslog [color=lightblue]
+    routers -> "snmp-exporter" [color=orange]
+
+    docker -> "docker-exporter" [color=orange]
+    "docker-exporter" -> prometheus [color=orange]
+    "node-exporter" -> prometheus [color=orange]
+    "snmp-exporter" -> prometheus [color=orange]
+    "snmp-generator" -> "snmp-exporter"
+    "syslog-exporter" -> prometheus [color=orange]
+    loki -> prometheus [color=orange]
+
+    prometheus -> victoriametrics [color=orange label=remote_write]
+  }

@@ -1,0 +1,3 @@
+FROM docker.io/persesdev/perses:v0.55.1
+COPY config.yaml /etc/perses/config.yaml
+COPY provisioning /etc/perses/provisioning

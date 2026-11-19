@@ -1,0 +1,34 @@
+route:
+  group_by: ["alertname"]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 1h
+  receiver: "web.hook"
+  routes:
+    - receiver: "vector"
+      continue: true
+      matchers: []
+    - matchers:
+        - alertname =~ "HighMemoryUsage|LowDiskSpace"
+      receiver: "pushover"
+receivers:
+  - name: "web.hook"
+    webhook_configs:
+      - url: "http://127.0.0.1:5001/"
+  - name: "pushover"
+    pushover_configs:
+      - user_key_file: /run/secrets/pushover_user_key
+        token_file: /run/secrets/pushover_token
+        priority: "0"
+  - name: "vector"
+    webhook_configs:
+      - url: "http://vector:8080/alerts"
+inhibit_rules:
+  - source_matchers: [severity="critical"]
+    target_matchers: [severity="warning"]
+    # Apply inhibition if the alertname is the same.
+    # CAUTION:
+    #   If all label names listed in `equal` are missing
+    #   from both the source and target alerts,
+    #   the inhibition rule will apply!
+    equal: [alertname, dev, instance]

@@ -1,0 +1,4 @@
+FROM docker.io/dxflrs/garage:v2.5.0
+
+COPY garage.toml /config/garage.toml
+

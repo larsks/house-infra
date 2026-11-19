@@ -1,0 +1,41 @@
+sources:
+  docker_logs:
+    type: docker_logs
+  alertmanager_webhook:
+    type: http_server
+    address: 0.0.0.0:8080
+    path: /alerts
+    decoding:
+      codec: json
+
+transforms:
+  alertmanager_alerts:
+    type: remap
+    inputs:
+      - alertmanager_webhook
+    source: |
+      . = unnest!(.alerts)
+
+sinks:
+  loki:
+    type: loki
+    inputs:
+      - docker_logs
+    endpoint: http://loki:3100
+    encoding:
+      codec: text
+    labels:
+      container: "{{ container_name }}"
+    dangerously_allow_unconfined_template_resolution: true
+  loki_alerts:
+    type: loki
+    inputs:
+      - alertmanager_alerts
+    endpoint: http://loki:3100
+    encoding:
+      codec: json
+    labels:
+      source: alertmanager
+      alertname: "{{ alerts.labels.alertname }}"
+      status: "{{ alerts.status }}"
+    dangerously_allow_unconfined_template_resolution: true

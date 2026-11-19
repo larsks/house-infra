@@ -1,0 +1,2 @@
+FROM ghcr.io/axoflow/axosyslog:4.29.0
+COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf

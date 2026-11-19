@@ -1,0 +1,26 @@
+services:
+  docker-exporter:
+    build:
+      context: .
+      dockerfile: Containerfile
+    user: root
+    restart: unless-stopped
+    environment:
+      - GOGC=50
+      - GOMEMLIMIT=64MiB
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    ports:
+      - "8080:8080"
+    networks:
+      - services
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/bin/busybox",
+          "wget",
+          "-q",
+          "--spider",
+          "http://localhost:8080/metrics",
+        ]

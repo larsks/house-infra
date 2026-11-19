@@ -1,0 +1,3 @@
+FROM ghcr.io/davidborzek/docker-exporter:0.7.0
+
+COPY --from=docker.io/busybox:stable-musl /bin/busybox /bin/busybox

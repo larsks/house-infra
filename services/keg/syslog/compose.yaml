@@ -1,0 +1,30 @@
+volumes:
+  syslog-ctl:
+
+services:
+  syslog:
+    build:
+      context: .
+      dockerfile: Containerfile
+    command:
+      - -e
+    volumes:
+      - /volume1/docker/syslog/logs:/logs
+      - syslog-ctl:/var/lib/syslog-ng
+    networks:
+      house:
+        ipv4_address: 192.168.1.211
+      services: {}
+    restart: unless-stopped
+
+  syslog-exporter:
+    image: ghcr.io/axoflow/axosyslog-metrics-exporter:0.0.16
+    command:
+      - --socket.path=/var/lib/syslog-ng/syslog-ng.ctl
+    depends_on:
+      - syslog
+    volumes:
+      - syslog-ctl:/var/lib/syslog-ng
+    networks:
+      - services
+    restart: unless-stopped

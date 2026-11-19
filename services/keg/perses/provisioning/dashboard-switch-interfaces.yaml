@@ -1,0 +1,98 @@
+kind: "Dashboard"
+metadata:
+  name: "switch-interfaces"
+  project: "switches"
+spec:
+  display:
+    name: "Switch interfaces"
+  duration: 1h
+  refreshInterval: 1m
+  panels:
+    port_throughput:
+      kind: Panel
+      spec:
+        display:
+          name: "Port throughput (bytes/sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: right
+              mode: table
+              size: small
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max by (device) (rate(node_network_receive_bytes_total{instance="office-sw-2.house:9100", device=~"lan.*"}[5m]))'
+                  seriesNameFormat: "{{device}} rx"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'max by (device) (rate(node_network_transmit_bytes_total{instance="office-sw-2.house:9100", device=~"lan.*"}[5m]))'
+                  seriesNameFormat: "{{device}} tx"
+
+    port_errors_drops:
+      kind: Panel
+      spec:
+        display:
+          name: "Port errors & drops by port (per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: right
+              mode: table
+              size: small
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum by (device) (rate(node_network_receive_errs_total{instance="office-sw-2.house:9100", device=~"lan.*"}[5m]) + rate(node_network_transmit_errs_total{instance="office-sw-2.house:9100", device=~"lan.*"}[5m]))'
+                  seriesNameFormat: "{{device}} errors"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'sum by (device) (rate(node_network_receive_drop_total{instance="office-sw-2.house:9100", device=~"lan.*"}[5m]) + rate(node_network_transmit_drop_total{instance="office-sw-2.house:9100", device=~"lan.*"}[5m]))'
+                  seriesNameFormat: "{{device}} drops"
+
+  layouts:
+    - kind: Grid
+      spec:
+        items:
+          - x: 0
+            y: 0
+            width: 24
+            height: 10
+            content:
+              "$ref": "#/spec/panels/port_throughput"
+          - x: 0
+            y: 10
+            width: 24
+            height: 10
+            content:
+              "$ref": "#/spec/panels/port_errors_drops"

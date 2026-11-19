@@ -1,0 +1,28 @@
+volumes:
+  loki-data:
+
+services:
+  loki:
+    build:
+      context: .
+      dockerfile: Containerfile
+    volumes:
+      - loki-data:/loki
+    command:
+      - -config.file=/etc/loki/local-config.yaml
+    environment:
+      - GOGC=50
+      - GOMEMLIMIT=150MiB
+    networks:
+      - services
+    restart: unless-stopped
+    depends_on:
+      traefik:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.loki.rule=Host(`loki.keg.house`)"
+      - "traefik.http.services.loki.loadbalancer.server.port=3100"
+      - "traefik.http.routers.loki.entrypoints=websecure"
+      - "traefik.http.routers.loki.tls=true"
+      - "traefik.http.routers.loki.tls.certresolver=step-ca"

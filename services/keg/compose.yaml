@@ -1,0 +1,24 @@
+name: services
+
+include:
+  - alertmanager/compose.yaml
+  - docker-exporter/compose.yaml
+  - garage/compose.yaml
+  # grafana/compose.yaml
+  - loki/compose.yaml
+  - node-exporter/compose.yaml
+  - perses/compose.yaml
+  - prometheus/compose.yaml
+  # registry/compose.yaml
+  - snmp-exporter/compose.yaml
+  - step-ca/compose.yaml
+  - syslog/compose.yaml
+  - toolbox/compose.yaml
+  - traefik/compose.yaml
+  - vector/compose.yaml
+
+networks:
+  services:
+    external: true
+  house:
+    external: true

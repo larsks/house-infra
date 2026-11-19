@@ -1,0 +1,29 @@
+volumes:
+  alertmanager-data:
+
+services:
+  alertmanager:
+    build:
+      context: .
+      dockerfile: Containerfile
+    volumes:
+      - alertmanager-data:/alertmanager
+    networks:
+      - services
+    restart: unless-stopped
+    secrets:
+      - pushover_user_key
+      - pushover_token
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.alerts.rule=Host(`alerts.keg.house`)"
+      - "traefik.http.services.alerts.loadbalancer.server.port=9093"
+      - "traefik.http.routers.alerts.entrypoints=websecure"
+      - "traefik.http.routers.alerts.tls=true"
+      - "traefik.http.routers.alerts.tls.certresolver=step-ca"
+
+secrets:
+  pushover_user_key:
+    file: /volume1/docker/services/alertmanager/secrets/pushover_user_key
+  pushover_token:
+    file: /volume1/docker/services/alertmanager/secrets/pushover_token

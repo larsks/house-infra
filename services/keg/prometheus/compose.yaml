@@ -1,0 +1,37 @@
+volumes:
+  prometheus-data:
+
+services:
+  prometheus:
+    build:
+      context: .
+      dockerfile: Containerfile
+    volumes:
+      - prometheus-data:/prometheus
+    networks:
+      - services
+    secrets:
+      - garage_metrics_token
+    restart: unless-stopped
+    depends_on:
+      traefik:
+        condition: service_healthy
+      docker-exporter:
+        condition: service_healthy
+      node-exporter:
+        condition: service_healthy
+      snmp-exporter:
+        condition: service_healthy
+      garage:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`prom.keg.house`)"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls=true"
+      - "traefik.http.routers.prometheus.tls.certresolver=step-ca"
+
+secrets:
+  garage_metrics_token:
+    file: /volume1/docker/services/garage/secrets/metrics_token

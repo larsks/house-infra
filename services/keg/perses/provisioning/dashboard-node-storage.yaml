@@ -1,0 +1,265 @@
+kind: "Dashboard"
+metadata:
+  name: "node-storage"
+  project: "system"
+spec:
+  display:
+    name: "Node storage"
+  duration: 1h
+  refreshInterval: 1m
+  variables:
+    - kind: "ListVariable"
+      spec:
+        name: "instance"
+        display:
+          name: "Host"
+        allowAllValue: false
+        allowMultiple: false
+        defaultValue: "keg.house:9100"
+        plugin:
+          kind: "PrometheusLabelValuesVariable"
+          spec:
+            labelName: "instance"
+            matchers:
+              - 'node_uname_info{job="node-exporter"}'
+  panels:
+    fs_avail_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "Root filesystem available (now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: percent
+              decimalPlaces: 1
+            max: 100
+            thresholds:
+              defaultColor: red
+              steps:
+                - value: 10
+                  color: orange
+                  name: "Low"
+                - value: 20
+                  color: green
+                  name: "Healthy"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * node_filesystem_avail_bytes{instance="$instance", mountpoint="/"} / node_filesystem_size_bytes{instance="$instance", mountpoint="/"}'
+
+    fs_avail_trend:
+      kind: Panel
+      spec:
+        display:
+          name: "Filesystem space available (%)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, min]
+            yAxis:
+              show: true
+              label: "%"
+              format:
+                unit: percent
+                decimalPlaces: 1
+              min: 0
+              max: 100
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * node_filesystem_avail_bytes{instance="$instance", fstype!~"tmpfs|devtmpfs|overlay|squashfs"} / node_filesystem_size_bytes{instance="$instance", fstype!~"tmpfs|devtmpfs|overlay|squashfs"}'
+                  seriesNameFormat: "{{mountpoint}}"
+
+    fs_bytes_trend:
+      kind: Panel
+      spec:
+        display:
+          name: "Root filesystem space"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, min]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_filesystem_size_bytes{instance="$instance", mountpoint="/"}'
+                  seriesNameFormat: "size"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'node_filesystem_avail_bytes{instance="$instance", mountpoint="/"}'
+                  seriesNameFormat: "available"
+
+    disk_throughput:
+      kind: Panel
+      spec:
+        display:
+          name: "Disk throughput (bytes/sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_disk_read_bytes_total{instance="$instance", device!~"dm-.*|loop.*"}[5m])'
+                  seriesNameFormat: "{{device}} read"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_disk_written_bytes_total{instance="$instance", device!~"dm-.*|loop.*"}[5m])'
+                  seriesNameFormat: "{{device}} write"
+
+    disk_busy:
+      kind: Panel
+      spec:
+        display:
+          name: "Disk busy (%)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: percent
+                decimalPlaces: 1
+              min: 0
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: '100 * rate(node_disk_io_time_seconds_total{instance="$instance", device!~"dm-.*|loop.*"}[5m])'
+                  seriesNameFormat: "{{device}}"
+
+    disk_iops:
+      kind: Panel
+      spec:
+        display:
+          name: "Disk IOPS"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_disk_reads_completed_total{instance="$instance", device!~"dm-.*|loop.*"}[5m])'
+                  seriesNameFormat: "{{device}} reads/s"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  query: 'rate(node_disk_writes_completed_total{instance="$instance", device!~"dm-.*|loop.*"}[5m])'
+                  seriesNameFormat: "{{device}} writes/s"
+
+  layouts:
+    - kind: Grid
+      spec:
+        items:
+          - x: 0
+            y: 0
+            width: 8
+            height: 6
+            content:
+              "$ref": "#/spec/panels/fs_avail_gauge"
+          - x: 8
+            y: 0
+            width: 16
+            height: 6
+            content:
+              "$ref": "#/spec/panels/fs_bytes_trend"
+          - x: 0
+            y: 6
+            width: 24
+            height: 8
+            content:
+              "$ref": "#/spec/panels/fs_avail_trend"
+          - x: 0
+            y: 14
+            width: 16
+            height: 8
+            content:
+              "$ref": "#/spec/panels/disk_throughput"
+          - x: 16
+            y: 14
+            width: 8
+            height: 8
+            content:
+              "$ref": "#/spec/panels/disk_busy"
+          - x: 0
+            y: 22
+            width: 24
+            height: 8
+            content:
+              "$ref": "#/spec/panels/disk_iops"
