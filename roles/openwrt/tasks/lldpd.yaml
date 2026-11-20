@@ -15,5 +15,5 @@
     autocommit: true
     command: set
     key: lldpd.config.location
-    value: Office
+    value: 'address country US city "Belmont" street "Livermore Rd" building "64" room "Office"'
   notify: reload-lldpd
