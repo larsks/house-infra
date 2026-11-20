@@ -7,6 +7,18 @@ spec:
     name: "Switch interfaces"
   duration: 1h
   refreshInterval: 1m
+  variables:
+    - kind: "ListVariable"
+      spec:
+        name: "datasource"
+        display:
+          name: "Datasource"
+        allowAllValue: false
+        allowMultiple: false
+        plugin:
+          kind: "DatasourceVariable"
+          spec:
+            datasourcePluginKind: "PrometheusDatasource"
   panels:
     port_throughput:
       kind: Panel
@@ -35,6 +47,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max by (device) (rate(node_network_receive_bytes_total{instance="office-sw-2.house:9100", device=~"lan.*"}[5m]))'
                   seriesNameFormat: "{{device}} rx"
           - kind: TimeSeriesQuery
@@ -42,6 +55,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max by (device) (rate(node_network_transmit_bytes_total{instance="office-sw-2.house:9100", device=~"lan.*"}[5m]))'
                   seriesNameFormat: "{{device}} tx"
 
@@ -70,6 +84,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (device) (rate(node_network_receive_errs_total{instance="office-sw-2.house:9100", device=~"lan.*"}[5m]) + rate(node_network_transmit_errs_total{instance="office-sw-2.house:9100", device=~"lan.*"}[5m]))'
                   seriesNameFormat: "{{device}} errors"
           - kind: TimeSeriesQuery
@@ -77,6 +92,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (device) (rate(node_network_receive_drop_total{instance="office-sw-2.house:9100", device=~"lan.*"}[5m]) + rate(node_network_transmit_drop_total{instance="office-sw-2.house:9100", device=~"lan.*"}[5m]))'
                   seriesNameFormat: "{{device}} drops"
 

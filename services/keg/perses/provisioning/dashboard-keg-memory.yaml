@@ -7,6 +7,18 @@ spec:
     name: "Keg memory"
   duration: 1h
   refreshInterval: 1m
+  variables:
+    - kind: "ListVariable"
+      spec:
+        name: "datasource"
+        display:
+          name: "Datasource"
+        allowAllValue: false
+        allowMultiple: false
+        plugin:
+          kind: "DatasourceVariable"
+          spec:
+            datasourcePluginKind: "PrometheusDatasource"
   panels:
     mem_available_gauge:
       kind: Panel
@@ -36,6 +48,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: '100 * node_memory_MemAvailable_bytes{instance="keg.house:9100"} / node_memory_MemTotal_bytes{instance="keg.house:9100"}'
 
     mem_available_trend:
@@ -78,6 +91,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: '100 * node_memory_MemAvailable_bytes{instance="keg.house:9100"} / node_memory_MemTotal_bytes{instance="keg.house:9100"}'
                   seriesNameFormat: "available %"
 
@@ -107,6 +121,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'node_memory_MemTotal_bytes{instance="keg.house:9100"}'
                   seriesNameFormat: "total"
           - kind: TimeSeriesQuery
@@ -114,6 +129,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'node_memory_MemAvailable_bytes{instance="keg.house:9100"}'
                   seriesNameFormat: "available"
           - kind: TimeSeriesQuery
@@ -121,6 +137,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'node_memory_Cached_bytes{instance="keg.house:9100"}'
                   seriesNameFormat: "cached"
 
@@ -150,6 +167,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'node_memory_SwapTotal_bytes{instance="keg.house:9100"} - node_memory_SwapFree_bytes{instance="keg.house:9100"}'
                   seriesNameFormat: "swap used"
 
@@ -178,6 +196,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'rate(node_vmstat_pswpin{instance="keg.house:9100"}[5m])'
                   seriesNameFormat: "swap in"
           - kind: TimeSeriesQuery
@@ -185,6 +204,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'rate(node_vmstat_pswpout{instance="keg.house:9100"}[5m])'
                   seriesNameFormat: "swap out"
 

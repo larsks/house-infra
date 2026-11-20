@@ -1,0 +1,12 @@
+kind: GlobalDatasource
+metadata:
+  name: victoriametrics
+spec:
+  default: false
+  plugin:
+    kind: PrometheusDatasource
+    spec:
+      proxy:
+        kind: HTTPProxy
+        spec:
+          url: http://vmetrics.house:8428

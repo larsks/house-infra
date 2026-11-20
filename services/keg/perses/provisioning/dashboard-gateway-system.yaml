@@ -7,6 +7,18 @@ spec:
     name: "Gateway system"
   duration: 1h
   refreshInterval: 1m
+  variables:
+    - kind: "ListVariable"
+      spec:
+        name: "datasource"
+        display:
+          name: "Datasource"
+        allowAllValue: false
+        allowMultiple: false
+        plugin:
+          kind: "DatasourceVariable"
+          spec:
+            datasourcePluginKind: "PrometheusDatasource"
   panels:
     cpu_gauge:
       kind: Panel
@@ -36,6 +48,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'avg without (job, hrDeviceIndex) (hrProcessorLoad{instance="gw.house"})'
 
     mem_gauge:
@@ -66,6 +79,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: '100 * max without (job) (hrStorageUsed{instance="gw.house", hrStorageDescr="Physical memory"}) / max without (job) (hrStorageSize{instance="gw.house", hrStorageDescr="Physical memory"})'
 
     cpu_trend:
@@ -98,6 +112,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (hrProcessorLoad{instance="gw.house"})'
                   seriesNameFormat: "core {{hrDeviceIndex}}"
 
@@ -127,6 +142,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (hrStorageSize{instance="gw.house", hrStorageDescr="Physical memory"} * hrStorageAllocationUnits{instance="gw.house", hrStorageDescr="Physical memory"})'
                   seriesNameFormat: "total"
           - kind: TimeSeriesQuery
@@ -134,6 +150,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (hrStorageUsed{instance="gw.house", hrStorageDescr="Physical memory"} * hrStorageAllocationUnits{instance="gw.house", hrStorageDescr="Physical memory"})'
                   seriesNameFormat: "used"
           - kind: TimeSeriesQuery
@@ -141,6 +158,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (hrStorageUsed{instance="gw.house", hrStorageDescr="Cached memory"} * hrStorageAllocationUnits{instance="gw.house", hrStorageDescr="Cached memory"})'
                   seriesNameFormat: "cached"
 
@@ -169,6 +187,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (hrSystemUptime{instance="gw.house"}) / 8640000'
                   seriesNameFormat: "uptime"
 
@@ -196,6 +215,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (sysDescr{instance="gw.house"}) or max without (job) (sysName{instance="gw.house"})'
 
   layouts:

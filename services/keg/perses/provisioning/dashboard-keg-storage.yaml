@@ -7,6 +7,18 @@ spec:
     name: "Keg storage"
   duration: 1h
   refreshInterval: 1m
+  variables:
+    - kind: "ListVariable"
+      spec:
+        name: "datasource"
+        display:
+          name: "Datasource"
+        allowAllValue: false
+        allowMultiple: false
+        plugin:
+          kind: "DatasourceVariable"
+          spec:
+            datasourcePluginKind: "PrometheusDatasource"
   panels:
     raid_failed_gauge:
       kind: Panel
@@ -33,6 +45,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum(node_md_disks{instance="keg.house:9100", state="failed"})'
 
     raid_disks_trend:
@@ -59,6 +72,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'node_md_disks{instance="keg.house:9100"}'
                   seriesNameFormat: "{{device}} {{state}}"
 
@@ -90,6 +104,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: '100 * node_filesystem_avail_bytes{instance="keg.house:9100", mountpoint="/"} / node_filesystem_size_bytes{instance="keg.house:9100", mountpoint="/"}'
 
     fs_avail_trend:
@@ -118,6 +133,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'node_filesystem_size_bytes{instance="keg.house:9100", mountpoint="/"}'
                   seriesNameFormat: "size"
           - kind: TimeSeriesQuery
@@ -125,6 +141,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'node_filesystem_avail_bytes{instance="keg.house:9100", mountpoint="/"}'
                   seriesNameFormat: "available"
 
@@ -155,6 +172,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'node_btrfs_used_bytes{instance="keg.house:9100"}'
                   seriesNameFormat: "{{block_group_type}} ({{mode}})"
 
@@ -182,6 +200,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'node_btrfs_allocation_ratio{instance="keg.house:9100"}'
                   seriesNameFormat: "{{type}}"
 

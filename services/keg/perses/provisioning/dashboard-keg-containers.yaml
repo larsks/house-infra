@@ -7,6 +7,18 @@ spec:
     name: "Keg containers"
   duration: 1h
   refreshInterval: 1m
+  variables:
+    - kind: "ListVariable"
+      spec:
+        name: "datasource"
+        display:
+          name: "Datasource"
+        allowAllValue: false
+        allowMultiple: false
+        plugin:
+          kind: "DatasourceVariable"
+          spec:
+            datasourcePluginKind: "PrometheusDatasource"
   panels:
     cpu_usage:
       kind: Panel
@@ -36,6 +48,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'docker_container_cpu_usage_percentage{instance="docker-exporter:8080"}'
                   seriesNameFormat: "{{name}}"
 
@@ -66,6 +79,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'docker_container_memory_usage_bytes{instance="docker-exporter:8080"}'
                   seriesNameFormat: "{{name}}"
 
@@ -96,6 +110,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (name) (rate(docker_container_network_receive_bytes_total{instance="docker-exporter:8080"}[5m]))'
                   seriesNameFormat: "{{name}} rx"
           - kind: TimeSeriesQuery
@@ -103,6 +118,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (name) (rate(docker_container_network_transmit_bytes_total{instance="docker-exporter:8080"}[5m]))'
                   seriesNameFormat: "{{name}} tx"
 
@@ -131,6 +147,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'docker_container_restarts_total{instance="docker-exporter:8080"}'
                   seriesNameFormat: "{{name}}"
 

@@ -7,6 +7,18 @@ spec:
     name: "Gateway interfaces"
   duration: 1h
   refreshInterval: 1m
+  variables:
+    - kind: "ListVariable"
+      spec:
+        name: "datasource"
+        display:
+          name: "Datasource"
+        allowAllValue: false
+        allowMultiple: false
+        plugin:
+          kind: "DatasourceVariable"
+          spec:
+            datasourcePluginKind: "PrometheusDatasource"
   panels:
     if_status:
       kind: Panel
@@ -77,6 +89,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'ifOperStatus{instance="gw.house", ifDescr=~"eth0|eth1|eth2|eth3|eth4|switch0"}'
 
     wan_throughput:
@@ -106,6 +119,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (rate(ifHCInOctets{instance="gw.house", ifDescr="eth0"}[5m]))'
                   seriesNameFormat: "rx"
           - kind: TimeSeriesQuery
@@ -113,6 +127,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (rate(ifHCOutOctets{instance="gw.house", ifDescr="eth0"}[5m]))'
                   seriesNameFormat: "tx"
 
@@ -143,6 +158,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max by (ifDescr) (rate(ifHCInOctets{instance="gw.house", ifDescr=~"eth1|eth2|eth3|eth4|switch0"}[5m]))'
                   seriesNameFormat: "{{ifDescr}} rx"
           - kind: TimeSeriesQuery
@@ -150,6 +166,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max by (ifDescr) (rate(ifHCOutOctets{instance="gw.house", ifDescr=~"eth1|eth2|eth3|eth4|switch0"}[5m]))'
                   seriesNameFormat: "{{ifDescr}} tx"
 
@@ -178,6 +195,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (ifDescr) (rate(ifInErrors{instance="gw.house", ifDescr=~"eth0|eth1|eth2|eth3|eth4|switch0"}[5m]) + rate(ifOutErrors{instance="gw.house", ifDescr=~"eth0|eth1|eth2|eth3|eth4|switch0"}[5m]))'
                   seriesNameFormat: "{{ifDescr}} errors"
           - kind: TimeSeriesQuery
@@ -185,6 +203,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (ifDescr) (rate(ifInDiscards{instance="gw.house", ifDescr=~"eth0|eth1|eth2|eth3|eth4|switch0"}[5m]) + rate(ifOutDiscards{instance="gw.house", ifDescr=~"eth0|eth1|eth2|eth3|eth4|switch0"}[5m]))'
                   seriesNameFormat: "{{ifDescr}} discards"
 

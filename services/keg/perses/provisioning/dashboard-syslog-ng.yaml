@@ -7,6 +7,18 @@ spec:
     name: "syslog-ng"
   duration: 1h
   refreshInterval: 30s
+  variables:
+    - kind: "ListVariable"
+      spec:
+        name: "datasource"
+        display:
+          name: "Datasource"
+        allowAllValue: false
+        allowMultiple: false
+        plugin:
+          kind: "DatasourceVariable"
+          spec:
+            datasourcePluginKind: "PrometheusDatasource"
   panels:
     unreachable_gauge:
       kind: Panel
@@ -33,6 +45,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum(syslogng_output_unreachable)'
 
     dropped_gauge:
@@ -60,6 +73,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum(rate(syslogng_output_events_total{result="dropped"}[5m]))'
 
     input_rate:
@@ -86,6 +100,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (id, transport) (rate(syslogng_input_events_total[5m]))'
                   seriesNameFormat: "{{id}} ({{transport}})"
 
@@ -113,6 +128,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (driver, result) (rate(syslogng_output_events_total[5m]))'
                   seriesNameFormat: "{{driver}} {{result}}"
 
@@ -140,6 +156,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (driver) (rate(syslogng_output_event_retries_total[5m]))'
                   seriesNameFormat: "{{driver}}"
 
@@ -167,6 +184,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (driver) (rate(syslogng_output_batch_timedout_total[5m]))'
                   seriesNameFormat: "{{driver}}"
 
@@ -198,6 +216,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: '100 * sum by (driver, id) (syslogng_memory_queue_events) / sum by (driver, id) (syslogng_memory_queue_capacity)'
                   seriesNameFormat: "{{driver}} ({{id}})"
 
@@ -227,6 +246,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'histogram_quantile(0.99, sum by (le) (rate(syslogng_event_processing_latency_seconds_bucket[5m])))'
                   seriesNameFormat: "p99"
 
@@ -256,6 +276,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'histogram_quantile(0.99, sum by (le, driver) (rate(syslogng_output_request_latency_seconds_bucket[5m])))'
                   seriesNameFormat: "{{driver}}"
 
@@ -283,6 +304,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (address, transport) (rate(syslogng_socket_receive_dropped_packets_total[5m]))'
                   seriesNameFormat: "{{address}} ({{transport}}) recv drops"
           - kind: TimeSeriesQuery
@@ -290,6 +312,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (address, transport) (rate(syslogng_socket_rejected_connections_total[5m]))'
                   seriesNameFormat: "{{address}} ({{transport}}) rejected conns"
 
@@ -317,6 +340,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (id, transport) (rate(syslogng_input_window_full_total[5m]))'
                   seriesNameFormat: "{{id}} ({{transport}})"
 
@@ -346,6 +370,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'syslogng_events_allocated_bytes'
                   seriesNameFormat: "events allocated"
           - kind: TimeSeriesQuery
@@ -353,6 +378,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum(syslogng_scratch_buffers_bytes)'
                   seriesNameFormat: "scratch buffers"
           - kind: TimeSeriesQuery
@@ -360,6 +386,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'sum by (driver, id) (syslogng_memory_queue_memory_usage_bytes)'
                   seriesNameFormat: "{{driver}} queue ({{id}})"
 
