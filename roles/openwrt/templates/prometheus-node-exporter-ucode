@@ -1,4 +1,0 @@
-config prometheus-node-exporter-ucode 'main'
-  option listen_interface '{{ node_exporter_listen_interface }}'
-  option listen_port '{{ node_exporter_listen_port }}'
-  option http_keepalive '{{ node_exporter_http_keepalive }}'

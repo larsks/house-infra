@@ -1,9 +1,0 @@
-node_exporter_listen_interface: "*"
-node_exporter_listen_port: "9100"
-node_exporter_http_keepalive: "70"
-
-dnsmasq_domain: lan
-dnsmasq_rebind_protection: 0
-dnsmasq_rebind_localhost: 1
-dnsmasq_authoritative: 1
-dnsmasq_lease_file: /tmp/dhcp.leases

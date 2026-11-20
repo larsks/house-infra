@@ -1,8 +1,0 @@
-system:
-  log_ip: 192.168.1.211
-  log_proto: udp
-
-ntp:
-  enabled: true
-  servers:
-    - 192.168.1.1

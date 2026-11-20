@@ -1,4 +1,0 @@
-authorized_keys:
-  - name: lars@oddbit.com
-    type: ssh-ed25519
-    material: AAAAC3NzaC1lZDI1NTE5AAAAIFVJHRH2xg2joG1xJIrNTalRkzT6BM8rQT+OXoFiKn16
