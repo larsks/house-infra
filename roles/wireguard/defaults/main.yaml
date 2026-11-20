@@ -1,5 +1,0 @@
-wireguard_packages:
-  - wireguard-tools
-
-wireguard_conf_dir: /etc/wireguard
-wireguard_listen_port: "51820"
