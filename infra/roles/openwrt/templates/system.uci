@@ -1,0 +1,20 @@
+config system
+  option hostname '{{ host.name }}'
+  option timezone 'GMT0'
+  option zonename 'UTC'
+  option ttylogin '0'
+  option log_size '128'
+  option urandom_seed '0'
+  option compat_version '1.0'
+  option conloglevel '8'
+  option cronloglevel '7'
+{% for key in host.data.system.keys() %}
+  option {{ key }} '{{ host.data.system[key] }}'
+{% endfor %}
+
+{% if host.data.ntp.enabled|default(false) %}
+config timeserver 'ntp'
+{% for server in host.data.ntp.servers|default([]) %}
+  list server {{ server }}
+{% endfor %}
+{% endif %}
