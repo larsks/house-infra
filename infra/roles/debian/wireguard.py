@@ -1,4 +1,3 @@
-# pyright: reportUnknownMemberType=false, reportUnusedCallResult=false, reportUnknownArgumentType=false
 from pathlib import Path
 
 from pyinfra import host
@@ -34,7 +33,7 @@ def apply():
 
         systemd.service(
             name=f"Ensure wg interface {interface['name']} is active",
-            service=f"wg-quick@{interface['name']}",
+            service=f"wg-quick@{interface['name']}.service",
             enabled=True,
             running=True,
             restarted=config.did_change,

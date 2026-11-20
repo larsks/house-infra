@@ -1,4 +1,3 @@
-# pyright: reportUnknownMemberType=false, reportUnusedCallResult=false
 from pathlib import Path
 
 from pyinfra.operations import files, server

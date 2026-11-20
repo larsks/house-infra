@@ -1,4 +1,3 @@
-# pyright: reportUnknownMemberType=false, reportUnusedCallResult=false
 from globals import roles_dir
 from pyinfra import host, local
 

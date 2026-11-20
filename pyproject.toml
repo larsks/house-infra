@@ -6,7 +6,10 @@ dependencies = ["pyinfra>=3.11.1"]
 
 # pyinfra adds the `infra` directory to sys.path, so siblings like `roles`
 # and `globals` import as top-level modules rather than relative to a
-# package. Tell pyright about this per-directory search path so it doesn't
-# flag these as implicit relative imports.
-[tool.pyright]
+# package. Tell basedpyright about this per-directory search path so it
+# doesn't flag these as implicit relative imports.
+[tool.basedpyright]
+reportUnknownMemberType = false
+reportUnusedCallResult = false
+reportUnknownArgumentType = false
 executionEnvironments = [{ root = "infra", extraPaths = ["infra"] }]
