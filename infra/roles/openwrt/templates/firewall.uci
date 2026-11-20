@@ -1,0 +1,32 @@
+config defaults
+  option syn_flood  1
+  option input REJECT
+  option output ACCEPT
+  option forward REJECT
+
+config zone
+  option name lan
+  list   network 'lan'
+  option input ACCEPT
+  option output ACCEPT
+  option forward ACCEPT
+
+{% for vlan in host.data.vlans %}
+{% if vlan.dhcp|default(false) %}
+config zone
+  option name 'vlan_{{ vlan.id }}'
+  list   network 'vlan{{ vlan.id }}'
+  option input REJECT
+  option output ACCEPT
+  option forward REJECT
+
+config rule
+  option name 'Allow-DHCP-vlan{{ vlan.id }}'
+  option src 'vlan_{{ vlan.id }}'
+  option proto udp
+  option dest_port  67
+  option target ACCEPT
+  option family ipv4
+
+{% endif %}
+{% endfor %}

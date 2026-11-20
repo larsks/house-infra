@@ -1,0 +1,7 @@
+config lldpd 'config'
+	option enable_cdp '1'
+	option enable_fdp '1'
+	option enable_sonmp '1'
+	option enable_edp '1'
+	option lldp_class '4'
+	option lldp_location '{{ host.data.lldp_location }}'
