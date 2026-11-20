@@ -7,6 +7,18 @@ spec:
     name: "Switch system"
   duration: 1h
   refreshInterval: 1m
+  variables:
+    - kind: "ListVariable"
+      spec:
+        name: "datasource"
+        display:
+          name: "Datasource"
+        allowAllValue: false
+        allowMultiple: false
+        plugin:
+          kind: "DatasourceVariable"
+          spec:
+            datasourcePluginKind: "PrometheusDatasource"
   panels:
     load_gauge:
       kind: Panel
@@ -36,6 +48,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (node_load1{instance="office-sw-2.house:9100"})'
 
     temp_gauge:
@@ -66,6 +79,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (node_thermal_zone_temp{instance="office-sw-2.house:9100"})'
 
     cpu_usage:
@@ -99,6 +113,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: '100 * avg by (mode) (rate(node_cpu_seconds_total{instance="office-sw-2.house:9100", mode!="idle"}[5m]))'
                   seriesNameFormat: "{{mode}}"
 
@@ -126,6 +141,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (node_load1{instance="office-sw-2.house:9100"})'
                   seriesNameFormat: "1m"
           - kind: TimeSeriesQuery
@@ -133,6 +149,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (node_load5{instance="office-sw-2.house:9100"})'
                   seriesNameFormat: "5m"
           - kind: TimeSeriesQuery
@@ -140,6 +157,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (node_load15{instance="office-sw-2.house:9100"})'
                   seriesNameFormat: "15m"
 
@@ -168,6 +186,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (node_thermal_zone_temp{instance="office-sw-2.house:9100"})'
                   seriesNameFormat: "{{type}}"
 
@@ -199,6 +218,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: '100 * max without (job) (node_memory_MemAvailable_bytes{instance="office-sw-2.house:9100"}) / max without (job) (node_memory_MemTotal_bytes{instance="office-sw-2.house:9100"})'
 
     mem_available_trend:
@@ -241,6 +261,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: '100 * max without (job) (node_memory_MemAvailable_bytes{instance="office-sw-2.house:9100"}) / max without (job) (node_memory_MemTotal_bytes{instance="office-sw-2.house:9100"})'
                   seriesNameFormat: "available %"
 
@@ -270,6 +291,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (node_memory_MemTotal_bytes{instance="office-sw-2.house:9100"})'
                   seriesNameFormat: "total"
           - kind: TimeSeriesQuery
@@ -277,6 +299,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (node_memory_MemAvailable_bytes{instance="office-sw-2.house:9100"})'
                   seriesNameFormat: "available"
           - kind: TimeSeriesQuery
@@ -284,6 +307,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (node_memory_Cached_bytes{instance="office-sw-2.house:9100"})'
                   seriesNameFormat: "cached"
 
@@ -311,6 +335,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (node_procs_running_total{instance="office-sw-2.house:9100"})'
                   seriesNameFormat: "running"
           - kind: TimeSeriesQuery
@@ -318,6 +343,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (node_procs_blocked_total{instance="office-sw-2.house:9100"})'
                   seriesNameFormat: "blocked"
 
@@ -345,6 +371,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (rate(node_context_switches_total{instance="office-sw-2.house:9100"}[5m]))'
                   seriesNameFormat: "context switches/s"
           - kind: TimeSeriesQuery
@@ -352,6 +379,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (rate(node_intr_total{instance="office-sw-2.house:9100"}[5m]))'
                   seriesNameFormat: "interrupts/s"
 
@@ -379,6 +407,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (node_filefd_allocated{instance="office-sw-2.house:9100"})'
                   seriesNameFormat: "allocated"
 
@@ -406,6 +435,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (rate(node_forks_total{instance="office-sw-2.house:9100"}[5m]))'
                   seriesNameFormat: "forks/s"
 
@@ -434,6 +464,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: '(max without (job) (node_time_seconds{instance="office-sw-2.house:9100"}) - max without (job) (node_boot_time_seconds{instance="office-sw-2.house:9100"})) / 86400'
                   seriesNameFormat: "uptime"
 
@@ -463,6 +494,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'max without (job) (node_openwrt_info{instance="office-sw-2.house:9100"}) or max without (job) (node_uname_info{instance="office-sw-2.house:9100"})'
 
   layouts:

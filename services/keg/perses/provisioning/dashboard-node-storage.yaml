@@ -10,6 +10,17 @@ spec:
   variables:
     - kind: "ListVariable"
       spec:
+        name: "datasource"
+        display:
+          name: "Datasource"
+        allowAllValue: false
+        allowMultiple: false
+        plugin:
+          kind: "DatasourceVariable"
+          spec:
+            datasourcePluginKind: "PrometheusDatasource"
+    - kind: "ListVariable"
+      spec:
         name: "instance"
         display:
           name: "Host"
@@ -51,6 +62,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: '100 * node_filesystem_avail_bytes{instance="$instance", mountpoint="/"} / node_filesystem_size_bytes{instance="$instance", mountpoint="/"}'
 
     fs_avail_trend:
@@ -83,6 +95,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: '100 * node_filesystem_avail_bytes{instance="$instance", fstype!~"tmpfs|devtmpfs|overlay|squashfs"} / node_filesystem_size_bytes{instance="$instance", fstype!~"tmpfs|devtmpfs|overlay|squashfs"}'
                   seriesNameFormat: "{{mountpoint}}"
 
@@ -112,6 +125,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'node_filesystem_size_bytes{instance="$instance", mountpoint="/"}'
                   seriesNameFormat: "size"
           - kind: TimeSeriesQuery
@@ -119,6 +133,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'node_filesystem_avail_bytes{instance="$instance", mountpoint="/"}'
                   seriesNameFormat: "available"
 
@@ -148,6 +163,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'rate(node_disk_read_bytes_total{instance="$instance", device!~"dm-.*|loop.*"}[5m])'
                   seriesNameFormat: "{{device}} read"
           - kind: TimeSeriesQuery
@@ -155,6 +171,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'rate(node_disk_written_bytes_total{instance="$instance", device!~"dm-.*|loop.*"}[5m])'
                   seriesNameFormat: "{{device}} write"
 
@@ -186,6 +203,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: '100 * rate(node_disk_io_time_seconds_total{instance="$instance", device!~"dm-.*|loop.*"}[5m])'
                   seriesNameFormat: "{{device}}"
 
@@ -213,6 +231,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'rate(node_disk_reads_completed_total{instance="$instance", device!~"dm-.*|loop.*"}[5m])'
                   seriesNameFormat: "{{device}} reads/s"
           - kind: TimeSeriesQuery
@@ -220,6 +239,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
+                  datasource: "$datasource"
                   query: 'rate(node_disk_writes_completed_total{instance="$instance", device!~"dm-.*|loop.*"}[5m])'
                   seriesNameFormat: "{{device}} writes/s"
 
