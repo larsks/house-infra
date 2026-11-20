@@ -6,3 +6,4 @@ ntp_servers = [
 dns_servers = [
     default_gateway,
 ]
+wireguard_listen_port = 51820
