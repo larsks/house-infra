@@ -1,9 +1,10 @@
 from pathlib import Path
 
+from pyinfra.operations import files, python
+
 from globals import files_dir as shared_files_dir
 from globals import repos_dir
 from lib.git import ensure_git_repo
-from pyinfra.operations import files, python, server
 
 acme_repo_url = "https://github.com/acmesh-official/acme.sh"
 acme_repo_dir = repos_dir / "acme.sh"
