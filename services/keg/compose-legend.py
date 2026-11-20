@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # pyright: basic
 
 """Composite a small SVG (e.g. a legend) onto a larger SVG at a fixed position.
