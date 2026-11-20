@@ -1,24 +1,28 @@
 #!/bin/sh
 
 APPDIR=/config
-DATADIR=$APPDIR/acme
-CA_CERTIFICATE=$APPDIR/house-ca.crt
+DATADIR="$APPDIR/acme"
+CERTDIR="$APPDIR/certs"
+CA_CERTIFICATE="$APPDIR/house-ca.crt"
+
+mkdir -p "$DATADIR" "$CERTDIR"
 
 systemctl stop lighttpd
-$APPDIR/acme.sh  --config-home $DATADIR \
-	--issue \
-	--standalone \
-	-d gw.house \
-	-m lars@gw.house \
-	--server https://keg.house:9000/acme/acme/directory \
-	--ca-bundle $APPDIR/house-ca.crt \
-	--days 5 \
-	"$@"
+trap "systemctl start lighttpd" EXIT TERM INT QUIT
 
-$APPDIR/acme.sh  --config-home $DATADIR \
-	--install-cert \
-	-d gw.house \
-	--key-file $APPDIR/certs/server.key \
-	--fullchain-file $APPDIR/certs/server.crt \
-	--reloadcmd "cat $APPDIR/certs/server.key $APPDIR/certs/server.crt > $APPDIR/certs/server.combined && chmod 600 $APPDIR/certs/server.combined"
-systemctl start lighttpd
+$APPDIR/acme.sh --config-home $DATADIR \
+  --issue \
+  --standalone \
+  -d gw.house \
+  -m lars@gw.house \
+  --server https://keg.house:9000/acme/acme/directory \
+  --ca-bundle "$CA_CERTIFICATE" \
+  --days 5 \
+  "$@"
+
+$APPDIR/acme.sh --config-home $DATADIR \
+  --install-cert \
+  -d gw.house \
+  --key-file "$CERTDIR/server.key" \
+  --fullchain-file "$CERTDIR/server.crt" \
+  --reloadcmd "cat $CERTDIR/server.key $CERTDIR/server.crt > $CERTDIR/server.combined && chmod 600 $CERTDIR/server.combined"

@@ -2,6 +2,7 @@ from group_data.all import syslog_server
 from lib.secrets import read_secret
 
 data = {
+    "_sudo": True,
     "address": "192.168.1.1/24",
     "ubnt_encrypted_password": read_secret("house/gw.house/users/ubnt"),
     "remote_syslog": {
