@@ -1,4 +1,3 @@
-# pyright: reportUnusedCallResult=false
 from pathlib import Path
 
 from globals import files_dir as shared_files_dir

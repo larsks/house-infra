@@ -1,4 +1,3 @@
-# pyright: reportUnusedCallResult=false
 import subprocess
 from pathlib import Path
 
