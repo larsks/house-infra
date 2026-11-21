@@ -1,3 +1,4 @@
-from roles.localhost import secrets
+from roles.localhost import acme, secrets
 
 secrets.apply()
+acme.apply()
