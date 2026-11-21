@@ -3,10 +3,11 @@ set positional-arguments
 default:
   @just --list
 
-deploy:
+local:
   pyinfra @local deploy.py -y
+
+deploy: local
   pyinfra hosts.py deploy.py -y
 
-dryrun:
+dryrun: local
   pyinfra hosts.py deploy.py --diff --dry
-

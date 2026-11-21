@@ -1,4 +1,6 @@
 secrets_repo_url = "keybase://private/larsks/secrets"
+acme_repo_url = "https://github.com/acmesh-official/acme.sh"
+
 syslog_server = "192.168.1.211"
 default_gateway = "192.168.1.1"
 ntp_servers = [
