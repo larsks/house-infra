@@ -11,5 +11,5 @@ if "edgerouters" in host.groups:
 if "openwrt" in host.groups:
     local.include(str(roles_dir / "openwrt" / "tasks.py"))
 
-if "debian" in host.groups:
-    local.include(str(roles_dir / "debian" / "tasks.py"))
+if "vmetrics" in host.groups:
+    local.include(str(roles_dir / "vmetrics" / "tasks.py"))

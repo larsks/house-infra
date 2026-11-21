@@ -8,6 +8,6 @@ openwrt = [
     ("office-sw-2.house", office_sw_2.data),
 ]
 
-debian = [
+vmetrics = [
     ("vmetrics.oddbit.com", vmetrics.data),
 ]
