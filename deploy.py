@@ -13,3 +13,6 @@ if "openwrt" in host.groups:
 
 if "vmetrics" in host.groups:
     local.include(str(roles_dir / "vmetrics" / "tasks.py"))
+
+if "keg" in host.groups:
+    local.include(str(roles_dir / "keg" / "tasks.py"))

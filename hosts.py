@@ -1,4 +1,4 @@
-from host_data import gw_house, office_sw_2, vmetrics
+from host_data import gw_house, keg, office_sw_2, vmetrics
 
 edgerouters = [
     ("gw.house", gw_house.data),
@@ -10,4 +10,8 @@ openwrt = [
 
 vmetrics = [
     ("vmetrics.oddbit.com", vmetrics.data),
+]
+
+keg = [
+    ("keg.house", keg.data),
 ]
