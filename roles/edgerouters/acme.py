@@ -27,4 +27,4 @@ def apply():
     ]
 
     for src, dest in certificate_files:
-        files.put(name=f"Copy {src} to {dest}", src=str(src), dest=str(dest))
+        files.put(name=f"Copy {Path(src).name} to {dest}", src=str(src), dest=str(dest))
