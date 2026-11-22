@@ -16,3 +16,6 @@ if "vmetrics" in host.groups:
 
 if "keg" in host.groups:
     local.include(str(roles_dir / "keg" / "tasks.py"))
+
+if "wifilink" in host.groups:
+    local.include(str(roles_dir / "wifilink" / "tasks.py"))

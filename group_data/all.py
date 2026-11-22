@@ -10,3 +10,4 @@ dns_servers = [
     default_gateway,
 ]
 wireguard_listen_port = 51820
+snmp_ro_community = "monitor"
