@@ -101,6 +101,7 @@ data = {
     ],
     "dns_static_entries": [
         {"name": ".keg.house", "address": "192.168.1.210"},
+        {"name": "loghost.house", "address": "192.168.1.211"},
         {"name": "vmetrics.house", "address": "192.168.5.10"},
     ],
     "fw_rules_ipv4": [
