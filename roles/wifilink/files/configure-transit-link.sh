@@ -25,9 +25,6 @@ addr() {
   echo "$1" | cut -f1 -d/
 }
 
-# This list of vlans that will transit the trunk.
-VLANS='101 102'
-
 if [ -z "$HOSTNAME" ]; then
   echo "ERROR: HOSTNAME is not set" >&2
   exit 1
@@ -48,7 +45,7 @@ fi
 
 modprobe vxlan
 
-for vlan in $VLANS; do
+for vlan in $(nvram get trunk_vlans); do
   swconfig dev switch0 vlan "$vlan" set ports '4t 5t'
 done
 swconfig dev switch0 set apply

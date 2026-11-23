@@ -29,4 +29,7 @@ nvram_config = {
     # the one firmware hook ("Firewall" script, Administration > Commands)
     # that runs after that ruleset is built.
     "rc_firewall": "iptables -F\niptables -t nat -F",
+    # Space-separated list of vlans that will be trunked over the wireless
+    # backhaul.
+    "trunk_vlans": "101 102",
 }
