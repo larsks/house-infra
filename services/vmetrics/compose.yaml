@@ -2,3 +2,4 @@ name: services
 
 include:
   - victoriametrics/compose.yaml
+  - node-exporter/compose.yaml
