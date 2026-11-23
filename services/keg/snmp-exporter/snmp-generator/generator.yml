@@ -53,6 +53,16 @@ modules:
     overrides:
       dot3StatsDuplexStatus:
         type: EnumAsInfo
+  wireless:
+    walk:
+      - IEEE802dot11-MIB::dot11CountersTable
+    lookups:
+      - source_indexes:
+          - ifIndex
+        lookup: IF-MIB::ifDescr
+      - source_indexes:
+          - ifIndex
+        lookup: IF-MIB::ifName
   entity:
     walk:
       - ENTITY-MIB::entPhysicalTable
