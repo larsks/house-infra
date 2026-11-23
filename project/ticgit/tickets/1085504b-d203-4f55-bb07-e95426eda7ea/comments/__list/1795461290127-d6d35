@@ -1,0 +1,1 @@
+{"author":"lars@oddbit.com","body":"Currently all links have a 1500 byte MTU. We should increase this on eth2 and any other links that are handling the tagged traffic. Before implementing we should check that everything supports the larger MTU size."}
