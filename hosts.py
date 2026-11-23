@@ -1,4 +1,4 @@
-from host_data import gw_house, keg, office_sw_2, vmetrics, backhaul_1, backhaul_2
+from host_data import backhaul_1, backhaul_2, gw_house, keg, office_sw_2, vmetrics
 
 edgerouters = [
     ("gw.house", gw_house.data),
@@ -17,6 +17,6 @@ keg = [
 ]
 
 wifilink = [
-    ("backhaul-1", backhaul_1.data),
-    ("backhaul-2", backhaul_2.data),
+    ("backhaul-1.house", backhaul_1.data),
+    ("backhaul-2.house", backhaul_2.data),
 ]

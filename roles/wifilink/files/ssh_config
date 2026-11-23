@@ -2,20 +2,19 @@ UserKnownHostsFile /dev/null
 StrictHostkeyChecking no
 WarnWeakCrypto no-pq-kex
 
+Host backhaul*
+  User root
+
 Host backhaul-1-near
   Hostname 10.18.25.1
-  User root
 
 Host backhaul-1-far
   Hostname 100.64.64.1
-  User root
   ProxyJump backhaul-2-near
 
 Host backhaul-2-near
   Hostname 10.18.25.2
-  User root
 
 Host backhaul-2-far
   Hostname 100.64.64.2
-  User root
   ProxyJump backhaul-1-near
