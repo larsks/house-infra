@@ -1,0 +1,206 @@
+kind: "Dashboard"
+metadata:
+  name: "backhaul-interfaces"
+  project: "network"
+spec:
+  display:
+    name: "Backhaul interfaces"
+  duration: 1h
+  refreshInterval: 1m
+  variables:
+    - kind: "ListVariable"
+      spec:
+        name: "datasource"
+        display:
+          name: "Datasource"
+        allowAllValue: false
+        allowMultiple: false
+        plugin:
+          kind: "DatasourceVariable"
+          spec:
+            datasourcePluginKind: "PrometheusDatasource"
+    - kind: "ListVariable"
+      spec:
+        name: "instance"
+        display:
+          name: "Router"
+        allowAllValue: false
+        allowMultiple: false
+        defaultValue: "backhaul-1.house"
+        plugin:
+          kind: "PrometheusLabelValuesVariable"
+          spec:
+            labelName: "instance"
+            matchers:
+              - 'ifOperStatus{job="snmp-wifilink"}'
+  panels:
+    if_status:
+      kind: Panel
+      spec:
+        display:
+          name: "Interface status (up/down)"
+        plugin:
+          kind: Table
+          spec:
+            density: compact
+            columnSettings:
+              - name: ifDescr
+                header: "Interface"
+              - name: __name__
+                hide: true
+              - name: instance
+                hide: true
+              - name: job
+                hide: true
+              - name: ifIndex
+                hide: true
+              - name: ifName
+                hide: true
+              - name: value
+                header: "Status"
+                cellSettings:
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "1"
+                    text: "up"
+                    textColor: "#2e7d32"
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "2"
+                    text: "down"
+                    textColor: "#c62828"
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "3"
+                    text: "testing"
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "4"
+                    text: "unknown"
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "5"
+                    text: "dormant"
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "6"
+                    text: "not present"
+                  - condition:
+                      kind: Value
+                      spec:
+                        value: "7"
+                    text: "lower layer down"
+                    textColor: "#c62828"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'ifOperStatus{instance="$instance", job="snmp-wifilink"}'
+
+    if_throughput:
+      kind: Panel
+      spec:
+        display:
+          name: "Interface throughput (bytes/sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: right
+              mode: table
+              size: small
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'max by (ifDescr) (rate(ifHCInOctets{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  seriesNameFormat: "{{ifDescr}} rx"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'max by (ifDescr) (rate(ifHCOutOctets{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  seriesNameFormat: "{{ifDescr}} tx"
+
+    if_errors_discards:
+      kind: Panel
+      spec:
+        display:
+          name: "Errors & discards by interface (per sec)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: right
+              mode: table
+              size: small
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'sum by (ifDescr) (rate(ifInErrors{instance="$instance", job="snmp-wifilink"}[5m]) + rate(ifOutErrors{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  seriesNameFormat: "{{ifDescr}} errors"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'sum by (ifDescr) (rate(ifInDiscards{instance="$instance", job="snmp-wifilink"}[5m]) + rate(ifOutDiscards{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  seriesNameFormat: "{{ifDescr}} discards"
+
+  layouts:
+    - kind: Grid
+      spec:
+        items:
+          - x: 0
+            y: 0
+            width: 24
+            height: 6
+            content:
+              "$ref": "#/spec/panels/if_status"
+          - x: 0
+            y: 6
+            width: 24
+            height: 9
+            content:
+              "$ref": "#/spec/panels/if_throughput"
+          - x: 0
+            y: 15
+            width: 24
+            height: 9
+            content:
+              "$ref": "#/spec/panels/if_errors_discards"

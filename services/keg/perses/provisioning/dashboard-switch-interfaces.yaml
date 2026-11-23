@@ -1,7 +1,7 @@
 kind: "Dashboard"
 metadata:
   name: "switch-interfaces"
-  project: "switches"
+  project: "network"
 spec:
   display:
     name: "Switch interfaces"

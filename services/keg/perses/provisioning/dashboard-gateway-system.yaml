@@ -1,7 +1,7 @@
 kind: "Dashboard"
 metadata:
   name: "gateway-system"
-  project: "gateway"
+  project: "network"
 spec:
   display:
     name: "Gateway system"

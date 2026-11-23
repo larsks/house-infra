@@ -5,15 +5,17 @@ frontend:
   important_dashboards:
     - title: "Network"
       dashboards:
-        - project: "switches"
+        - project: "network"
           dashboard: "switch-interfaces"
-        - project: "gateway"
+        - project: "network"
           dashboard: "gateway-interfaces"
+        - project: "network"
+          dashboard: "backhaul-interfaces"
     - title: "System"
       dashboards:
-        - project: "switches"
+        - project: "network"
           dashboard: "switch-system"
-        - project: "gateway"
+        - project: "network"
           dashboard: "gateway-system"
         - project: "keg"
           dashboard: "keg-system"
