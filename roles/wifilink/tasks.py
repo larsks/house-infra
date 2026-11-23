@@ -40,9 +40,10 @@ for src, dest, mode in scripts:
         mode=mode,
     )
 
-server.reboot(
-    name="Reboot router after nvram changes",
-    delay=10,
-    reboot_timeout=600,
-    _if=nvram.any_changed,
-)
+if not host.data.get("skip_reboot"):
+    server.reboot(
+        name="Reboot router after nvram changes",
+        delay=10,
+        reboot_timeout=600,
+        _if=nvram.any_changed,
+    )
