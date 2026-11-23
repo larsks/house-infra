@@ -24,6 +24,16 @@ data = {
     ],
     "dhcp_static_entries": [
         {
+            "name": "backhaul-1",
+            "ipaddress": "192.168.1.127",
+            "macaddress": "10:da:43:8f:ab:68",
+        },
+        {
+            "name": "backhaul-2",
+            "ipaddress": "192.168.1.94",
+            "macaddress": "10:da:43:8f:df:a3",
+        },
+        {
             "name": "colorprinter",
             "ipaddress": "192.168.1.51",
             "macaddress": "18:60:24:09:fe:21",
