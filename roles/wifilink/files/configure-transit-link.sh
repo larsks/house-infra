@@ -17,6 +17,9 @@
 # than the firmware's br0, because dd-wrt hardcodes any wireless Client
 # Bridge (WET) radio onto br0 -- there's no way to keep a WET radio off
 # of it, so the trunk has to be the one that moves instead.
+#
+# This script runs before firewall configuration. Use rc_firewall if you
+# need to modify the firewall.
 
 addr() {
   echo "$1" | cut -f1 -d/
@@ -85,9 +88,6 @@ ip link show eth0 | grep -q 'master trunk0' || {
 }
 
 ip link set transit up
-
-iptables -F
-iptables -t nat -F
 
 # br0 is left to the firmware (vlan2/eth2/eth1 -- whatever dd-wrt puts
 # there, including the WET client-bridge radio); give it a persistent

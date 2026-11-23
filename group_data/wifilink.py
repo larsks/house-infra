@@ -23,4 +23,10 @@ nvram_config = {
     "block_ident": "0",
     "block_multicast": "0",
     "block_wan": "0",
+    # dd-wrt builds its standard WAN/firewall ruleset (treating eth2 as a
+    # WAN face, blocking remote admin ports, etc.) AFTER rc_startup runs,
+    # so flushing it from configure-transit-link.sh doesn't stick. This is
+    # the one firmware hook ("Firewall" script, Administration > Commands)
+    # that runs after that ruleset is built.
+    "rc_firewall": "iptables -F\niptables -t nat -F",
 }
