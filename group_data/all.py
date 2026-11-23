@@ -11,3 +11,4 @@ dns_servers = [
 ]
 wireguard_listen_port = 51820
 snmp_ro_community = "monitor"
+house_ssid = "vks-1"
