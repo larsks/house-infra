@@ -29,9 +29,10 @@ def apply():
     desired_nvram = {
         "snmpd_enable": "1",
         "snmpd_rocommunity": host.data.snmp_ro_community,
+        "block_snmp": "0",
     }
 
-    changed = nvram.set_nvram_multi(desired_nvram)
+    changed = nvram.set_nvram_multi(desired_nvram, name="Enable snmpd")
 
     server.shell(
         name="(Re)start snmpd",

@@ -1,14 +1,16 @@
 from pathlib import Path
 
 from pyinfra import host
-from pyinfra.operations import files
+from pyinfra.operations import files, server
 
 from roles.wifilink import nvram, snmp
 
 files_dir = Path(__file__).parent / "files"
 remote_scripts_dir = Path("/jffs/scripts")
 
+nvram.set_nvram("router_name", host.name)
 nvram.set_nvram_multi(host.data.nvram_config, name="Set wifi backhaul nvram config")
+snmp.apply()
 
 scripts = (
     (
@@ -37,3 +39,10 @@ for src, dest, mode in scripts:
         group="root",
         mode=mode,
     )
+
+server.reboot(
+    name="Reboot router after nvram changes",
+    delay=10,
+    reboot_timeout=600,
+    _if=nvram.any_changed,
+)

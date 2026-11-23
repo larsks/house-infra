@@ -3,6 +3,17 @@ from typing import override
 from pyinfra import host
 from pyinfra.api import FactBase, QuoteString, StringCommand, operation
 
+_changed_hosts: set[str] = set()
+
+
+def _mark_changed() -> None:
+    _changed_hosts.add(host.name)
+
+
+def any_changed() -> bool:
+    """Return True if any nvram value has changed for the current host."""
+    return host.name in _changed_hosts
+
 
 class NvramValue(FactBase):
     """Read a single dd-wrt nvram variable."""
@@ -21,6 +32,7 @@ def set_nvram(var_name: str, desired_value: str):
     current_value = host.get_fact(NvramValue, var_name)
 
     if current_value != desired_value:
+        _mark_changed()
         yield StringCommand(
             "nvram",
             "set",
@@ -36,6 +48,7 @@ def set_nvram_multi(values: dict[str, str]):
         current_value = host.get_fact(NvramValue, var_name)
 
         if current_value != desired_value:
+            _mark_changed()
             changed = True
             yield StringCommand(
                 "nvram",
