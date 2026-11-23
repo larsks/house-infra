@@ -1,0 +1,101 @@
+direction: down
+
+classes: {
+  wired-router: {
+    shape: "hexagon"
+  }
+  wifi-router: {
+    shape: "hexagon"
+    style: {
+      fill: "lightgreen"
+    }
+  }
+  ethernet-switch: {
+    shape: "oval"
+    style: {
+      fill: "lightblue"
+    }
+  }
+  ethernet: {
+    style: {
+      stroke: "lightblue"
+      stroke-width: 2
+    }
+  }
+  primary-wifi: {
+    style: {
+      stroke: "lightgreen"
+      stroke-width: 2
+      stroke-dash: 4
+    }
+  }
+  backhaul-wifi: {
+    style: {
+      stroke: "#dc2626"
+      stroke-width: 4
+      stroke-dash: 4
+    }
+  }
+}
+
+Internet: Internet {shape: cloud}
+
+basement: Basement {
+  gateway: gateway {class: wired-router}
+}
+
+firstfloor: First Floor {
+  office-sw-2: office-sw-2 {class: ethernet-switch}
+  orbi: orbi {class: wifi-router}
+  keg: keg {shape: rectangle}
+  madhatter: madhatter {shape: rectangle}
+  backhaul-2: backhaul-2 {class: wifi-router}
+}
+
+secondfloor: Second Floor {
+  office-sw-3: office-sw-3 {class: ethernet-switch}
+  radio0: radio0 {shape: rectangle}
+  radio1: radio1 {shape: rectangle}
+  toothless: toothless {shape: rectangle}
+  backhaul-1: backhaul-1 {class: wifi-router}
+}
+
+Internet -- basement.gateway
+
+basement.gateway -- firstfloor.office-sw-2: {class: ethernet}
+basement.gateway -- firstfloor.orbi: {class: ethernet}
+firstfloor.office-sw-2 -- firstfloor.keg: {class: ethernet}
+firstfloor.office-sw-2 -- firstfloor.madhatter: {class: ethernet}
+firstfloor.office-sw-2 -- firstfloor.backhaul-2: {class: ethernet}
+
+secondfloor.office-sw-3 -- secondfloor.backhaul-1: {class: ethernet}
+secondfloor.office-sw-3 -- secondfloor.radio0
+secondfloor.office-sw-3 -- secondfloor.radio1
+secondfloor.office-sw-3 -- secondfloor.toothless
+
+secondfloor.backhaul-1 -- firstfloor.backhaul-2: vxlan trunk {class: backhaul-wifi}
+firstfloor.orbi -- secondfloor.backhaul-1: management {class: primary-wifi}
+firstfloor.orbi -- firstfloor.backhaul-2: management {class: primary-wifi}
+
+legend: {
+  near: bottom-right
+  grid-rows: 3
+  style.fill: transparent
+  style.stroke: transparent
+
+  ethernet-key: "" {
+    shape: text
+    style.font-color: "#2563eb"
+    label: "— ethernet"
+  }
+  primary-key: "" {
+    shape: text
+    style.font-color: "#16a34a"
+    label: "– – primary wifi"
+  }
+  backhaul-key: "" {
+    shape: text
+    style.font-color: "#dc2626"
+    label: "– – backhaul wifi"
+  }
+}
