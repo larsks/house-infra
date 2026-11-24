@@ -24,7 +24,7 @@ class NvramValue(FactBase):
 
     @override
     def process(self, output: list[str]):
-        return output[0] if output else None
+        return "\n".join(output) if output else None
 
 
 @operation()
