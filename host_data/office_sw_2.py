@@ -13,13 +13,19 @@ data = {
     ],
     "interfaces": [
         {
+            "label": "mgmt",
+            "device": "switch.1",
+            "proto": "static",
+            "ipaddr": "10.64.1.252/24",
+        },
+        {
             "label": "lan",
             "device": "switch.100",
             "proto": "static",
             "ipaddr": "192.168.1.252/24",
             "gateway": default_gateway,
             "dns": dns_servers,
-        }
+        },
     ],
     "lldp_location": 'address country US city "Belmont" street "Livermore Rd" building "64" room "Office"',
     "vlans": [
