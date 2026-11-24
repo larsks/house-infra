@@ -37,6 +37,12 @@ scripts = (
         None,
     ),
     (
+        files_dir / "start-lldpd.sh",
+        remote_rc_startup_dir / "start-lldpd.sh",
+        "0755",
+        None,
+    ),
+    (
         files_dir / "mount_opt.sh",
         remote_rc_startup_dir / "mount_opt.sh",
         "0755",

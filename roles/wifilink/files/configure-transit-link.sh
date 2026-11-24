@@ -46,7 +46,7 @@ fi
 
 modprobe vxlan
 
-swconfig dev switch0 vlan 1 set ports '1 2 3 5t'
+swconfig dev switch0 vlan 1 set ports '1 2 3 4 5t'
 for vlan in $(nvram get trunk_vlans); do
   swconfig dev switch0 vlan "$vlan" set ports '4t 5t'
 done
