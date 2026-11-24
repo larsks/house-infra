@@ -4,13 +4,13 @@ default:
   @just --list
 
 local:
-  pyinfra @local deploy.py -y
+  uv run pyinfra @local deploy.py -y
 
 deploy *args: local
-  pyinfra hosts.py deploy.py --diff -y "$@"
+  uv run pyinfra hosts.py deploy.py --diff -y "$@"
 
 dryrun *args: local
-  pyinfra hosts.py deploy.py --diff --dry "$@"
+  uv run pyinfra hosts.py deploy.py --diff --dry "$@"
 
 run *args:
-  pyinfra hosts.py "$@"
+  uv run pyinfra hosts.py "$@"
