@@ -1,0 +1,1 @@
+{"author":"lars@oddbit.com","body":"Currenly opkg was installed by hand (binaries, directory structure, config). This all needs to be automated. The opkg install tasks will fail if opkg is not available and running."}
