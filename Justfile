@@ -11,3 +11,6 @@ deploy *args: local
 
 dryrun *args: local
   pyinfra hosts.py deploy.py --diff --dry "$@"
+
+run *args:
+  pyinfra hosts.py "$@"
