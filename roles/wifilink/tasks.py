@@ -19,16 +19,40 @@ directories = (
 )
 
 
+def refresh_udhcpc(changed):
+    server.shell(
+        name="Refresh udhcpc",
+        commands=[
+            "kill -USR1 $(cat /var/run/udhcpc.br0.pid)",
+        ],
+        _if=changed,
+    )
+
+
 scripts = (
+    (
+        files_dir / "configure-root-profile.sh",
+        remote_rc_startup_dir / "configure-root-profile.sh",
+        "0755",
+        None,
+    ),
+    (
+        files_dir / "mount_opt.sh",
+        remote_rc_startup_dir / "mount_opt.sh",
+        "0755",
+        None,
+    ),
     (
         files_dir / "configure-transit-link.sh",
         remote_rc_startup_dir / "configure-transit-link.sh",
         "0755",
+        None,
     ),
     (
         files_dir / "udhcpc-br0.sh",
         remote_scripts_dir / "udhcpc-br0.sh",
         "0755",
+        refresh_udhcpc,
     ),
 )
 
@@ -41,7 +65,7 @@ for path, mode in directories:
         mode=mode,
     )
 
-for src, dest, mode in scripts:
+for src, dest, mode, handler in scripts:
     res = files.put(
         name=f"Install {dest.name}",
         src=str(src),
@@ -56,12 +80,17 @@ for src, dest, mode in scripts:
         mode=mode,
     )
 
+    if handler is not None:
+        handler(res.did_change)
+
 for path in files_to_delete:
     files.file(
         name=f"Ensure {path} is absent",
         path=str(path),
         present=False,
     )
+
+packages.apply()
 
 if not host.data.get("skip_reboot"):
     server.reboot(
