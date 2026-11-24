@@ -10,12 +10,11 @@ data = {
     "switch_macaddr": switch_macaddr,
     "devices": [
         {"name": "switch", "type": "bridge", "macaddr": switch_macaddr},
-        {"name": "switch.1", "macaddr": switch_macaddr},
     ],
     "interfaces": [
         {
             "label": "lan",
-            "device": "switch.1",
+            "device": "switch.100",
             "proto": "static",
             "ipaddr": "192.168.1.252/24",
             "gateway": default_gateway,
@@ -25,18 +24,19 @@ data = {
     "lldp_location": 'address country US city "Belmont" street "Livermore Rd" building "64" room "Office"',
     "vlans": [
         {"id": 1},
+        {"id": 100},
         {"id": 101, "dhcp": True, "cidr": "192.168.101.0/24"},
         {"id": 102, "dhcp": True, "cidr": "192.168.102.0/24"},
     ],
     "ports": {
-        "lan1": {"pvid": 1, "vlans": [101, 102]},
-        "lan2": {"pvid": 1, "vlans": [101, 102]},
-        "lan3": {"pvid": 1, "vlans": [101, 102]},
-        "lan4": {"pvid": 1, "vlans": [101, 102]},
-        "lan5": {"pvid": 1, "vlans": [101, 102]},
-        "lan6": {"pvid": 1, "vlans": [101, 102]},
-        "lan7": {"pvid": 1, "vlans": [101, 102]},
-        "lan8": {"pvid": 1, "vlans": [101, 102]},
+        "lan1": {"pvid": 100, "vlans": [1, 101, 102]},
+        "lan2": {"pvid": 100, "vlans": [101, 102]},
+        "lan3": {"pvid": 100, "vlans": [101, 102]},
+        "lan4": {"pvid": 100, "vlans": [101, 102]},
+        "lan5": {"pvid": 100, "vlans": [101, 102]},
+        "lan6": {"pvid": 100, "vlans": [101, 102]},
+        "lan7": {"pvid": 100, "vlans": [101, 102]},
+        "lan8": {"pvid": 100, "vlans": [101, 102]},
         ######################################################################
         #
         #    9      11      13      15
@@ -60,12 +60,12 @@ data = {
         "lan14": {"pvid": 102},
         "lan15": {"pvid": 101},
         "lan16": {"pvid": 102},
-        "lan17": {"pvid": 1, "vlans": [101, 102]},
-        "lan18": {"pvid": 1, "vlans": [101, 102]},
-        "lan19": {"pvid": 1, "vlans": [101, 102]},
-        "lan21": {"pvid": 1, "vlans": [101, 102]},
-        "lan22": {"pvid": 1, "vlans": [101, 102]},
+        "lan17": {"pvid": 100, "vlans": [101, 102]},
+        "lan18": {"pvid": 100, "vlans": [101, 102]},
+        "lan19": {"pvid": 100, "vlans": [101, 102]},
+        "lan21": {"pvid": 100, "vlans": [101, 102]},
+        "lan22": {"pvid": 100, "vlans": [101, 102]},
         "lan23": {"pvid": 1, "vlans": [101, 102]},
-        "lan24": {"pvid": 1, "vlans": [101, 102]},
+        "lan24": {"pvid": 100, "vlans": [101, 102]},
     },
 }
