@@ -1,0 +1,370 @@
+kind: "Dashboard"
+metadata:
+  name: "backhaul-system"
+  project: "network"
+spec:
+  display:
+    name: "Backhaul system"
+  duration: 1h
+  refreshInterval: 1m
+  variables:
+    - kind: "ListVariable"
+      spec:
+        name: "datasource"
+        display:
+          name: "Datasource"
+        allowAllValue: false
+        allowMultiple: false
+        plugin:
+          kind: "DatasourceVariable"
+          spec:
+            datasourcePluginKind: "PrometheusDatasource"
+    - kind: "ListVariable"
+      spec:
+        name: "instance"
+        display:
+          name: "Router"
+        allowAllValue: false
+        allowMultiple: false
+        defaultValue: "backhaul-1.house"
+        plugin:
+          kind: "PrometheusLabelValuesVariable"
+          spec:
+            labelName: "instance"
+            matchers:
+              - 'laLoadFloat{job="snmp-wifilink"}'
+  panels:
+    load_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "Load (1m, now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: decimal
+              decimalPlaces: 2
+            max: 2
+            thresholds:
+              defaultColor: green
+              steps:
+                - value: 0.8
+                  color: orange
+                  name: "Elevated"
+                - value: 1.2
+                  color: red
+                  name: "Saturated"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'max without (job) (laLoadFloat{instance="$instance", job="snmp-wifilink", laNames="Load-1"})'
+
+    cpu_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "CPU utilization (now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: percent
+              decimalPlaces: 1
+            max: 100
+            thresholds:
+              defaultColor: green
+              steps:
+                - value: 70
+                  color: orange
+                  name: "Elevated"
+                - value: 90
+                  color: red
+                  name: "Saturated"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: '100 - max without (job) (rate(ssCpuRawIdle{instance="$instance", job="snmp-wifilink"}[5m]))'
+
+    mem_gauge:
+      kind: Panel
+      spec:
+        display:
+          name: "Memory used (now)"
+        plugin:
+          kind: GaugeChart
+          spec:
+            calculation: last
+            format:
+              unit: percent
+              decimalPlaces: 1
+            max: 100
+            thresholds:
+              defaultColor: green
+              steps:
+                - value: 70
+                  color: orange
+                  name: "Elevated"
+                - value: 90
+                  color: red
+                  name: "Saturated"
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: '100 - (100 * max without (job) (memAvailReal{instance="$instance", job="snmp-wifilink"}) / max without (job) (memTotalReal{instance="$instance", job="snmp-wifilink"}))'
+
+    load_trend:
+      kind: Panel
+      spec:
+        display:
+          name: "Load average"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'max without (job) (laLoadFloat{instance="$instance", job="snmp-wifilink"})'
+                  seriesNameFormat: "{{laNames}}"
+
+    cpu_usage:
+      kind: Panel
+      spec:
+        display:
+          name: "CPU usage by mode (%)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              label: "%"
+              format:
+                unit: percent
+                decimalPlaces: 1
+              min: 0
+              max: 100
+            visual:
+              display: line
+              lineWidth: 1.5
+              areaOpacity: 0.1
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'max without (job) (rate(ssCpuRawUser{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  seriesNameFormat: "user"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'max without (job) (rate(ssCpuRawNice{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  seriesNameFormat: "nice"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'max without (job) (rate(ssCpuRawSystem{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  seriesNameFormat: "system"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'max without (job) (rate(ssCpuRawInterrupt{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  seriesNameFormat: "interrupt"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'max without (job) (rate(ssCpuRawSoftIRQ{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  seriesNameFormat: "softirq"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'max without (job) (rate(ssCpuRawWait{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  seriesNameFormat: "wait"
+
+    mem_trend:
+      kind: Panel
+      spec:
+        display:
+          name: "Memory overview"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: '1024 * max without (job) (memTotalReal{instance="$instance", job="snmp-wifilink"})'
+                  seriesNameFormat: "total"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: '1024 * max without (job) (memAvailReal{instance="$instance", job="snmp-wifilink"})'
+                  seriesNameFormat: "available"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: '1024 * max without (job) (memBuffer{instance="$instance", job="snmp-wifilink"})'
+                  seriesNameFormat: "buffer"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: '1024 * max without (job) (memCached{instance="$instance", job="snmp-wifilink"})'
+                  seriesNameFormat: "cached"
+
+    swap_trend:
+      kind: Panel
+      spec:
+        display:
+          name: "Swap overview"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: bottom
+              mode: table
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: bytes
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: '1024 * max without (job) (memTotalSwap{instance="$instance", job="snmp-wifilink"})'
+                  seriesNameFormat: "total"
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: '1024 * max without (job) (memAvailSwap{instance="$instance", job="snmp-wifilink"})'
+                  seriesNameFormat: "available"
+
+  layouts:
+    - kind: Grid
+      spec:
+        items:
+          - x: 0
+            y: 0
+            width: 8
+            height: 6
+            content:
+              "$ref": "#/spec/panels/load_gauge"
+          - x: 8
+            y: 0
+            width: 8
+            height: 6
+            content:
+              "$ref": "#/spec/panels/cpu_gauge"
+          - x: 16
+            y: 0
+            width: 8
+            height: 6
+            content:
+              "$ref": "#/spec/panels/mem_gauge"
+          - x: 0
+            y: 6
+            width: 24
+            height: 8
+            content:
+              "$ref": "#/spec/panels/load_trend"
+          - x: 0
+            y: 14
+            width: 24
+            height: 8
+            content:
+              "$ref": "#/spec/panels/cpu_usage"
+          - x: 0
+            y: 22
+            width: 24
+            height: 8
+            content:
+              "$ref": "#/spec/panels/mem_trend"
+          - x: 0
+            y: 30
+            width: 24
+            height: 8
+            content:
+              "$ref": "#/spec/panels/swap_trend"

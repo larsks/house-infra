@@ -11,6 +11,38 @@ modules:
     walk:
       - SNMPv2-MIB::system
       - SNMPv2-MIB::snmp
+      - UCD-SNMP-MIB::laTable
+      - UCD-SNMP-MIB::memory
+      - UCD-SNMP-MIB::systemStats
+    lookups:
+      - source_indexes:
+          - laIndex
+        lookup: laNames
+    overrides:
+      laNames:
+        ignore: true
+      laLoad:
+        ignore: true
+      laConfig:
+        ignore: true
+      laErrMessage:
+        ignore: true
+      laErrorFlag:
+        type: EnumAsInfo
+      memSwapError:
+        type: EnumAsInfo
+      memSwapErrorMsg:
+        ignore: true
+      memTotalSwapTXT:
+        ignore: true
+      memAvailSwapTXT:
+        ignore: true
+      memTotalRealTXT:
+        ignore: true
+      memAvailRealTXT:
+        ignore: true
+      ssErrorName:
+        ignore: true
   layer3:
     walk:
       - TCP-MIB::tcp

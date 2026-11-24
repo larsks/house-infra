@@ -17,6 +17,8 @@ frontend:
           dashboard: "switch-system"
         - project: "network"
           dashboard: "gateway-system"
+        - project: "network"
+          dashboard: "backhaul-system"
         - project: "keg"
           dashboard: "keg-system"
         - project: "keg"
