@@ -1,9 +1,12 @@
+from pathlib import Path
+
 from globals import roles_dir
 from group_data.all import house_ssid, ntp_servers, syslog_server
 from lib.secrets import read_secret
 
 ssh_config_file = str(roles_dir / "wifilink" / "files" / "ssh_config")
 house_wifi_password = read_secret("house/wifi/vks-1/password")
+rc_startup_dir = Path("/jffs/etc/rc_startup.d")
 
 nvram_config = {
     "wl0_mode": "wet",
@@ -35,4 +38,6 @@ nvram_config = {
     # Space-separated list of vlans that will be trunked over the wireless
     # backhaul.
     "trunk_vlans": "101 102",
+    # Run startup scripts.
+    "rc_startup": f"run-parts {rc_startup_dir}",
 }

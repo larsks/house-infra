@@ -3,19 +3,26 @@ from pathlib import Path
 from pyinfra import host
 from pyinfra.operations import files, server
 
-from roles.wifilink import nvram, snmp
+from roles.wifilink import nvram, packages, snmp
 
 files_dir = Path(__file__).parent / "files"
 remote_scripts_dir = Path("/jffs/scripts")
+remote_rc_startup_dir = host.data.rc_startup_dir
 
 nvram.set_nvram("router_name", host.name)
 nvram.set_nvram_multi(host.data.nvram_config, name="Set wifi backhaul nvram config")
 snmp.apply()
 
+directories = (
+    (remote_scripts_dir, "0755"),
+    (remote_rc_startup_dir, "0755"),
+)
+
+
 scripts = (
     (
         files_dir / "configure-transit-link.sh",
-        remote_scripts_dir / "configure-transit-link.sh",
+        remote_rc_startup_dir / "configure-transit-link.sh",
         "0755",
     ),
     (
@@ -25,8 +32,17 @@ scripts = (
     ),
 )
 
+files_to_delete = (remote_scripts_dir / "configure-transit-link.sh",)
+
+for path, mode in directories:
+    files.directory(
+        name=f"Ensure directory {path} exists",
+        path=str(path),
+        mode=mode,
+    )
+
 for src, dest, mode in scripts:
-    files.put(
+    res = files.put(
         name=f"Install {dest.name}",
         src=str(src),
         dest=str(dest),
@@ -38,6 +54,13 @@ for src, dest, mode in scripts:
         user="root",
         group="root",
         mode=mode,
+    )
+
+for path in files_to_delete:
+    files.file(
+        name=f"Ensure {path} is absent",
+        path=str(path),
+        present=False,
     )
 
 if not host.data.get("skip_reboot"):
