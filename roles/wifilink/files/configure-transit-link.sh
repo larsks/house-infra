@@ -3,15 +3,16 @@
 # Trunk VLANs over a VXLAN tunnel between two DD-WRT routers, and give
 # each router a management-only path onto the house wifi.
 #
-# ┌────────────┐           ┌────────────┐
-# │  switch-1  │           │  switch-2  │
-# └─┬──────────┘           └─┬──────────┘
-#   │                        │
-# ┌─┴────────────┐         ┌─┴────────────┐
-# │  backhaul-1  ├─────────┤  backhaul-2  │
-# └──────────────┘  vxlan  └──────────────┘
-#                   over
-#                   wifi
+# ┌────────────┐                   ┌────────────┐
+# │  switch-1  │                   │  switch-2  │
+# └─┬──────────┘                   └─┬──────────┘
+#   │                                │
+#  eth0                             eth0
+# ┌─┴────────────┐                 ┌─┴────────────┐
+# │  backhaul-1  ├eth2─────────eth2┤  backhaul-2  │
+# └──────────────┘      vxlan      └──────────────┘
+#                       over
+#                       wifi
 #
 # eth0+transit (the VLAN trunk) live on their own "trunk0" bridge rather
 # than the firmware's br0, because dd-wrt hardcodes any wireless Client
