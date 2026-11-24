@@ -49,6 +49,8 @@ swconfig dev switch0 vlan 1 set ports '1 2 3 5t'
 for vlan in $(nvram get trunk_vlans); do
   swconfig dev switch0 vlan "$vlan" set ports '4t 5t'
 done
+swconfig dev switch0 set enable_jumbo 1
+swconfig dev switch0 set enable_vlan 1
 swconfig dev switch0 set apply
 
 ip link show vlan1 | grep -q 'master br0' &&
