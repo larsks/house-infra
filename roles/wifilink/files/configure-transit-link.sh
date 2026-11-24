@@ -69,6 +69,9 @@ ip addr show vlan1 | grep -q $VLAN1 ||
 ip addr show eth2 | grep -q "$LOCAL" ||
   ip addr add "$LOCAL" dev eth2
 
+# Increase MTU to account for vxlan metadata
+ip link set mtu 1600 eth2
+
 ip link show trunk0 >/dev/null 2>&1 || {
   ip link add trunk0 type bridge
   ip link set trunk0 up
