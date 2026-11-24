@@ -36,6 +36,8 @@ The bridge configuration on the routers looks like this:
 - `eth1` is the 2.4ghz wireless interface, which is attached to the house wifi network for management access and exporting logs/emtrics.
 - `eth2` is the 5ghz network interface and the transit network link on the `100.64.64.0/29` network
 - `eth0` is the CPU port.
+- `br0` wraps `eth1`
+- `trunk0` connects the LAN port with the VXLAN channel
 
 For reference purposes, the interface configuration on `backhaul-1` looks like this:
 
