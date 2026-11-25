@@ -2,8 +2,8 @@ from pathlib import Path
 
 from pyinfra.operations import files, server
 
-from roles.edgerouters import acme
-from roles.edgerouters.filters import EdgerouterFilters
+from roles.gateways import acme
+from roles.gateways.filters import EdgerouterFilters
 
 template_dir = Path(__file__).parent / "templates"
 script_dir = Path(__file__).parent / "scripts"

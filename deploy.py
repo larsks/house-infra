@@ -2,17 +2,17 @@ from pyinfra import host, local
 
 from globals import roles_dir
 
-if "edgerouters" in host.groups:
-    local.include(str(roles_dir / "edgerouters" / "tasks.py"))
+if "gateways" in host.groups:
+    local.include(str(roles_dir / "gateways" / "tasks.py"))
 
-if "openwrt" in host.groups:
-    local.include(str(roles_dir / "openwrt" / "tasks.py"))
+if "switches" in host.groups:
+    local.include(str(roles_dir / "switches" / "tasks.py"))
 
-if "vmetrics" in host.groups:
+if "remote" in host.groups:
     local.include(str(roles_dir / "vmetrics" / "tasks.py"))
 
-if "keg" in host.groups:
+if "diskstations" in host.groups:
     local.include(str(roles_dir / "keg" / "tasks.py"))
 
-if "wifilink" in host.groups:
-    local.include(str(roles_dir / "wifilink" / "tasks.py"))
+if "routers" in host.groups:
+    local.include(str(roles_dir / "routers" / "tasks.py"))

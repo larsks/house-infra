@@ -4,7 +4,7 @@ from pyinfra import host
 from pyinfra.api import FactBase, QuoteString, StringCommand
 from pyinfra.operations import server
 
-from roles.wifilink import nvram
+from roles.routers import nvram
 
 
 class ProcessIsRunning(FactBase):

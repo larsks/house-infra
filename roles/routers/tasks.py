@@ -3,7 +3,7 @@ from pathlib import Path
 from pyinfra import host
 from pyinfra.operations import files, server
 
-from roles.wifilink import nvram, packages, snmp
+from roles.routers import nvram, packages, snmp
 
 files_dir = Path(__file__).parent / "files"
 remote_scripts_dir = Path("/jffs/scripts")

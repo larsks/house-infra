@@ -32,7 +32,7 @@ spec:
           spec:
             labelName: "instance"
             matchers:
-              - 'ifOperStatus{job="snmp-wifilink"}'
+              - 'ifOperStatus{job="snmp-routers"}'
   panels:
     if_status:
       kind: Panel
@@ -104,7 +104,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: 'ifOperStatus{instance="$instance", job="snmp-wifilink"}'
+                  query: 'ifOperStatus{instance="$instance", job="snmp-routers"}'
 
     if_throughput:
       kind: Panel
@@ -134,7 +134,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: 'max by (ifDescr) (rate(ifHCInOctets{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  query: 'max by (ifDescr) (rate(ifHCInOctets{instance="$instance", job="snmp-routers"}[5m]))'
                   seriesNameFormat: "{{ifDescr}} rx"
           - kind: TimeSeriesQuery
             spec:
@@ -142,7 +142,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: 'max by (ifDescr) (rate(ifHCOutOctets{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  query: 'max by (ifDescr) (rate(ifHCOutOctets{instance="$instance", job="snmp-routers"}[5m]))'
                   seriesNameFormat: "{{ifDescr}} tx"
 
     if_errors_discards:
@@ -171,7 +171,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: 'sum by (ifDescr) (rate(ifInErrors{instance="$instance", job="snmp-wifilink"}[5m]) + rate(ifOutErrors{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  query: 'sum by (ifDescr) (rate(ifInErrors{instance="$instance", job="snmp-routers"}[5m]) + rate(ifOutErrors{instance="$instance", job="snmp-routers"}[5m]))'
                   seriesNameFormat: "{{ifDescr}} errors"
           - kind: TimeSeriesQuery
             spec:
@@ -179,7 +179,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: 'sum by (ifDescr) (rate(ifInDiscards{instance="$instance", job="snmp-wifilink"}[5m]) + rate(ifOutDiscards{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  query: 'sum by (ifDescr) (rate(ifInDiscards{instance="$instance", job="snmp-routers"}[5m]) + rate(ifOutDiscards{instance="$instance", job="snmp-routers"}[5m]))'
                   seriesNameFormat: "{{ifDescr}} discards"
 
   layouts:

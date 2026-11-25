@@ -1,1 +1,1 @@
-data = {}
+data: dict[str, str] = {}

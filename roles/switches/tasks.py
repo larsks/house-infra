@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pyinfra.operations import apk, files, server
 
-from roles.openwrt.filters import OpenwrtFilters
+from roles.switches.filters import OpenwrtFilters
 
 template_dir = Path(__file__).parent / "templates"
 

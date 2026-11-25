@@ -58,7 +58,7 @@ For reference purposes, the interface configuration on `backhaul-1` looks like t
 
 The configuration on `backhaul-2` is identical but for different addresses.
 
-See [configure-transit-link.sh](roles/wifilink/files/configure-transit-link.sh) for details on how networking on the routers is configured.
+See [configure-transit-link.sh](roles/routers/files/configure-transit-link.sh) for details on how networking on the routers is configured.
 
 [edgerouter-x]: https://store.ui.com/us/en/products/er-x
 [FIOS]: https://www.verizon.com/home/internet/fios-fastest-internet

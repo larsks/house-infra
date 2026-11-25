@@ -32,7 +32,7 @@ spec:
           spec:
             labelName: "instance"
             matchers:
-              - 'laLoadFloat{job="snmp-wifilink"}'
+              - 'laLoadFloat{job="snmp-routers"}'
   panels:
     load_gauge:
       kind: Panel
@@ -63,7 +63,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: 'max without (job) (laLoadFloat{instance="$instance", job="snmp-wifilink", laNames="Load-1"})'
+                  query: 'max without (job) (laLoadFloat{instance="$instance", job="snmp-routers", laNames="Load-1"})'
 
     cpu_gauge:
       kind: Panel
@@ -94,7 +94,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: '100 - max without (job) (rate(ssCpuRawIdle{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  query: '100 - max without (job) (rate(ssCpuRawIdle{instance="$instance", job="snmp-routers"}[5m]))'
 
     mem_gauge:
       kind: Panel
@@ -125,7 +125,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: '100 - (100 * max without (job) (memAvailReal{instance="$instance", job="snmp-wifilink"}) / max without (job) (memTotalReal{instance="$instance", job="snmp-wifilink"}))'
+                  query: '100 - (100 * max without (job) (memAvailReal{instance="$instance", job="snmp-routers"}) / max without (job) (memTotalReal{instance="$instance", job="snmp-routers"}))'
 
     load_trend:
       kind: Panel
@@ -152,7 +152,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: 'max without (job) (laLoadFloat{instance="$instance", job="snmp-wifilink"})'
+                  query: 'max without (job) (laLoadFloat{instance="$instance", job="snmp-routers"})'
                   seriesNameFormat: "{{laNames}}"
 
     cpu_usage:
@@ -187,7 +187,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: 'max without (job) (rate(ssCpuRawUser{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  query: 'max without (job) (rate(ssCpuRawUser{instance="$instance", job="snmp-routers"}[5m]))'
                   seriesNameFormat: "user"
           - kind: TimeSeriesQuery
             spec:
@@ -195,7 +195,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: 'max without (job) (rate(ssCpuRawNice{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  query: 'max without (job) (rate(ssCpuRawNice{instance="$instance", job="snmp-routers"}[5m]))'
                   seriesNameFormat: "nice"
           - kind: TimeSeriesQuery
             spec:
@@ -203,7 +203,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: 'max without (job) (rate(ssCpuRawSystem{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  query: 'max without (job) (rate(ssCpuRawSystem{instance="$instance", job="snmp-routers"}[5m]))'
                   seriesNameFormat: "system"
           - kind: TimeSeriesQuery
             spec:
@@ -211,7 +211,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: 'max without (job) (rate(ssCpuRawInterrupt{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  query: 'max without (job) (rate(ssCpuRawInterrupt{instance="$instance", job="snmp-routers"}[5m]))'
                   seriesNameFormat: "interrupt"
           - kind: TimeSeriesQuery
             spec:
@@ -219,7 +219,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: 'max without (job) (rate(ssCpuRawSoftIRQ{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  query: 'max without (job) (rate(ssCpuRawSoftIRQ{instance="$instance", job="snmp-routers"}[5m]))'
                   seriesNameFormat: "softirq"
           - kind: TimeSeriesQuery
             spec:
@@ -227,7 +227,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: 'max without (job) (rate(ssCpuRawWait{instance="$instance", job="snmp-wifilink"}[5m]))'
+                  query: 'max without (job) (rate(ssCpuRawWait{instance="$instance", job="snmp-routers"}[5m]))'
                   seriesNameFormat: "wait"
 
     mem_trend:
@@ -257,7 +257,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: '1024 * max without (job) (memTotalReal{instance="$instance", job="snmp-wifilink"})'
+                  query: '1024 * max without (job) (memTotalReal{instance="$instance", job="snmp-routers"})'
                   seriesNameFormat: "total"
           - kind: TimeSeriesQuery
             spec:
@@ -265,7 +265,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: '1024 * max without (job) (memAvailReal{instance="$instance", job="snmp-wifilink"})'
+                  query: '1024 * max without (job) (memAvailReal{instance="$instance", job="snmp-routers"})'
                   seriesNameFormat: "available"
           - kind: TimeSeriesQuery
             spec:
@@ -273,7 +273,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: '1024 * max without (job) (memBuffer{instance="$instance", job="snmp-wifilink"})'
+                  query: '1024 * max without (job) (memBuffer{instance="$instance", job="snmp-routers"})'
                   seriesNameFormat: "buffer"
           - kind: TimeSeriesQuery
             spec:
@@ -281,7 +281,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: '1024 * max without (job) (memCached{instance="$instance", job="snmp-wifilink"})'
+                  query: '1024 * max without (job) (memCached{instance="$instance", job="snmp-routers"})'
                   seriesNameFormat: "cached"
 
     swap_trend:
@@ -311,7 +311,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: '1024 * max without (job) (memTotalSwap{instance="$instance", job="snmp-wifilink"})'
+                  query: '1024 * max without (job) (memTotalSwap{instance="$instance", job="snmp-routers"})'
                   seriesNameFormat: "total"
           - kind: TimeSeriesQuery
             spec:
@@ -319,7 +319,7 @@ spec:
                 kind: PrometheusTimeSeriesQuery
                 spec:
                   datasource: "$datasource"
-                  query: '1024 * max without (job) (memAvailSwap{instance="$instance", job="snmp-wifilink"})'
+                  query: '1024 * max without (job) (memAvailSwap{instance="$instance", job="snmp-routers"})'
                   seriesNameFormat: "available"
 
   layouts:
