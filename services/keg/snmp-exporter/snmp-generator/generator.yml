@@ -88,6 +88,8 @@ modules:
   wireless:
     walk:
       - IEEE802dot11-MIB::dot11CountersTable
+      - DDWRT-WIRELESS-STATS-MIB::radioTable
+      - DDWRT-WIRELESS-STATS-MIB::clientTable
     lookups:
       - source_indexes:
           - ifIndex
@@ -95,6 +97,22 @@ modules:
       - source_indexes:
           - ifIndex
         lookup: IF-MIB::ifName
+      - source_indexes:
+          - radioIndex
+        lookup: DDWRT-WIRELESS-STATS-MIB::radioIfName
+      - source_indexes:
+          - radioIndex
+          - clientIndex
+        lookup: DDWRT-WIRELESS-STATS-MIB::clientMac
+    overrides:
+      radioIfName:
+        ignore: true
+      clientMac:
+        ignore: true
+      radioIndex:
+        ignore: true
+      clientIndex:
+        ignore: true
   entity:
     walk:
       - ENTITY-MIB::entPhysicalTable

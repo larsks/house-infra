@@ -1,0 +1,122 @@
+DDWRT-WIRELESS-STATS-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    netSnmpExperimental
+        FROM NET-SNMP-MIB
+    OBJECT-TYPE, Integer32
+        FROM SNMPv2-SMI
+    DisplayString
+        FROM SNMPv2-TC;
+
+-- Custom, unregistered OIDs published by a net-snmp pass_persist
+-- script (snmp-wireless-stats.lua; see roles/routers/files/ in the
+-- infra repo) running on the dd-wrt backhaul routers, under
+-- NET-SNMP-MIB::netSnmpExperimental (1.3.6.1.4.1.8072.9999), the
+-- subtree net-snmp's own MIB sets aside for exactly this kind of
+-- local, unregistered use.
+--
+-- Two ordinary SNMP tables: radioTable (one row per wifi radio) and
+-- clientTable (one row per associated client, scoped to a radio).
+-- radioIndex and clientIndex aren't published as their own accessible
+-- columns (not-accessible, same as plenty of real tables do with
+-- their index); their values are already implicit in every other
+-- column's own OID suffix, so the lua script just doesn't bother
+-- emitting them separately.
+
+radioTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF RadioEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "One row per wifi radio."
+    ::= { netSnmpExperimental 1 }
+
+radioEntry OBJECT-TYPE
+    SYNTAX      RadioEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A single radio's row."
+    INDEX       { radioIndex }
+    ::= { radioTable 1 }
+
+RadioEntry ::= SEQUENCE {
+    radioIndex  Integer32,
+    radioNoise  Integer32,
+    radioIfName DisplayString
+}
+
+radioIndex OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "The 1-based position of the interface in WL_IFACES."
+    ::= { radioEntry 1 }
+
+radioNoise OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Noise floor (dBm) for this radio."
+    ::= { radioEntry 2 }
+
+radioIfName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The interface name (e.g. eth1) for this radio."
+    ::= { radioEntry 3 }
+
+clientTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClientEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "One row per client associated to a radio."
+    ::= { netSnmpExperimental 2 }
+
+clientEntry OBJECT-TYPE
+    SYNTAX      ClientEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A single client's row, scoped to its radio."
+    INDEX       { radioIndex, clientIndex }
+    ::= { clientTable 1 }
+
+ClientEntry ::= SEQUENCE {
+    clientIndex Integer32,
+    clientRssi  Integer32,
+    clientMac   DisplayString
+}
+
+clientIndex OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "The client's 1-based position within this radio's sorted
+         assoclist; can shift between polls as clients
+         associate/disassociate."
+    ::= { clientEntry 1 }
+
+clientRssi OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "RSSI (dBm) for this client."
+    ::= { clientEntry 2 }
+
+clientMac OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "This client's MAC address."
+    ::= { clientEntry 3 }
+
+END

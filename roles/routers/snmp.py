@@ -14,9 +14,11 @@ wireless_stats_script = remote_scripts_dir / "snmp-wireless-stats.lua"
 wrapper_script = remote_scripts_dir / "snmpd-wrapper.sh"
 setup_script = remote_rc_startup_dir / "configure-snmpd-wrapper.sh"
 
-# NET-SNMP-MIB::netSnmpPlaypen, the subtree net-snmp reserves for this
-# kind of unregistered, local use. Must match the BASE OID (and the
-# wireless_stats_script path above) hardcoded into snmpd-wrapper.sh.
+# NET-SNMP-MIB::netSnmpExperimental, the subtree net-snmp reserves for
+# this kind of unregistered, local use. Must match the BASE OID (and
+# the wireless_stats_script path above) hardcoded into
+# snmpd-wrapper.sh, and the base of DDWRT-WIRELESS-STATS-MIB in
+# services/keg/snmp-exporter's mibs/.
 wireless_stats_oid = ".1.3.6.1.4.1.8072.9999"
 
 

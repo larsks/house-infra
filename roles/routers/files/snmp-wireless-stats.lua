@@ -6,17 +6,27 @@
 --
 --   pass_persist .1.3.6.1.4.1.8072.9999 /jffs/scripts/snmp-wireless-stats.lua
 --
--- 1.3.6.1.4.1.8072.9999 is NET-SNMP-MIB::netSnmpPlaypen, the subtree
--- net-snmp reserves for exactly this kind of unregistered, local use.
+-- 1.3.6.1.4.1.8072.9999 is NET-SNMP-MIB::netSnmpExperimental, the
+-- subtree net-snmp reserves for exactly this kind of unregistered,
+-- local use. Laid out as two conformant SNMP tables (see
+-- DDWRT-WIRELESS-STATS-MIB in services/keg/snmp-exporter's mibs/, the
+-- authoritative description of this layout) so it can be walked and
+-- labeled by snmp_exporter's generator the normal way:
 --
---   .1.<ifidx>              -- noise floor (dBm) for interface ifidx
---   .2.<ifidx>.<clientidx>  -- RSSI (dBm) for a client, keyed by its
---                              position in that interface's (sorted,
---                              stable) assoclist
---   .3.<ifidx>              -- the interface name itself (string),
---                              so ifidx is self-describing
---   .4.<ifidx>.<clientidx>  -- the client's MAC address (string), so
---                              clientidx is self-describing too
+--   .1.1.2.<ifidx>             -- radioTable: noise floor (dBm)
+--   .1.1.3.<ifidx>             -- radioTable: interface name (string),
+--                                  so ifidx is self-describing
+--   .2.1.2.<ifidx>.<clientidx> -- clientTable: RSSI (dBm), keyed by a
+--                                  client's position in that
+--                                  interface's (sorted, stable)
+--                                  assoclist
+--   .2.1.3.<ifidx>.<clientidx> -- clientTable: the client's MAC
+--                                  address (string), so clientidx is
+--                                  self-describing too
+--
+-- (radioIndex/clientIndex, the tables' actual INDEX columns, aren't
+-- published -- their values are already implicit in the OID suffix
+-- above, same as any not-accessible index column.)
 --
 -- ifidx is the 1-based position of the interface in WL_IFACES, which
 -- defaults to "eth1 eth2" -- this board's 2.4GHz and 5GHz radios --
@@ -80,10 +90,10 @@ for iface in (os.getenv("WL_IFACES") or "eth1 eth2"):gmatch("%S+") do
 end
 
 local BASE = ".1.3.6.1.4.1.8072.9999"
-local NOISE_BASE = BASE .. ".1"
-local RSSI_BASE = BASE .. ".2"
-local IFNAME_BASE = BASE .. ".3"
-local MAC_BASE = BASE .. ".4"
+local NOISE_BASE = BASE .. ".1.1.2"
+local IFNAME_BASE = BASE .. ".1.1.3"
+local RSSI_BASE = BASE .. ".2.1.2"
+local MAC_BASE = BASE .. ".2.1.3"
 
 -- ---------------------------------------------------------------------
 -- shared helpers
@@ -158,9 +168,11 @@ end
 -- ---------------------------------------------------------------------
 
 -- Builds the four OID branches independently, in ifidx order (and,
--- within the rssi/mac branches, clientidx order) -- that's already
--- overall ascending OID order (branch 1 < 2 < 3 < 4), so no final
--- cross-branch sort is needed and a sequential getnext scan works.
+-- within the rssi/mac branches, clientidx order). Concatenated below
+-- as noise, ifname, rssi, mac -- that's this layout's overall
+-- ascending OID order (.1.1.2 < .1.1.3 < .2.1.2 < .2.1.3) -- so no
+-- final cross-branch sort is needed and a sequential getnext scan
+-- works.
 local function build_entries()
   local noise_entries, rssi_entries, ifname_entries, mac_entries = {}, {}, {}, {}
 
@@ -215,10 +227,10 @@ local function build_entries()
   for _, e in ipairs(noise_entries) do
     entries[#entries + 1] = e
   end
-  for _, e in ipairs(rssi_entries) do
+  for _, e in ipairs(ifname_entries) do
     entries[#entries + 1] = e
   end
-  for _, e in ipairs(ifname_entries) do
+  for _, e in ipairs(rssi_entries) do
     entries[#entries + 1] = e
   end
   for _, e in ipairs(mac_entries) do
