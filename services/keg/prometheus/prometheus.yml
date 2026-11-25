@@ -98,7 +98,7 @@ scrape_configs:
           - "backhaul-2.house"
     params:
       auth: ["public_v2"]
-      module: ["system", "layer2"]
+      module: ["system", "layer2", "wireless"]
     metrics_path: /snmp
     relabel_configs:
       - source_labels: [__address__]

@@ -182,6 +182,68 @@ spec:
                   query: 'sum by (ifDescr) (rate(ifInDiscards{instance="$instance", job="snmp-routers"}[5m]) + rate(ifOutDiscards{instance="$instance", job="snmp-routers"}[5m]))'
                   seriesNameFormat: "{{ifDescr}} discards"
 
+    wireless_noise:
+      kind: Panel
+      spec:
+        display:
+          name: "Wireless noise floor (dBm)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: right
+              mode: table
+              size: small
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: decimal
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'radioNoise{instance="$instance", job="snmp-routers"}'
+                  seriesNameFormat: "{{radioIfName}}"
+
+    wireless_rssi:
+      kind: Panel
+      spec:
+        display:
+          name: "Wireless client RSSI (dBm)"
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              position: right
+              mode: table
+              size: small
+              values: [last, max]
+            yAxis:
+              show: true
+              format:
+                unit: decimal
+            visual:
+              display: line
+              lineWidth: 1.5
+              showPoints: auto
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource: "$datasource"
+                  query: 'clientRssi{instance="$instance", job="snmp-routers"}'
+                  seriesNameFormat: "{{radioIfName}} {{clientMac}}"
+
   layouts:
     - kind: Grid
       spec:
@@ -204,3 +266,15 @@ spec:
             height: 9
             content:
               "$ref": "#/spec/panels/if_errors_discards"
+          - x: 0
+            y: 24
+            width: 24
+            height: 9
+            content:
+              "$ref": "#/spec/panels/wireless_noise"
+          - x: 0
+            y: 33
+            width: 24
+            height: 9
+            content:
+              "$ref": "#/spec/panels/wireless_rssi"
