@@ -4,7 +4,7 @@ default:
   @just --list
 
 local:
-  uv run pyinfra @local deploy.py -y
+  uv run pyinfra --chdir local @local deploy.py -y
 
 deploy *args: local
   uv run pyinfra hosts.py deploy.py --diff -y "$@"
