@@ -10,24 +10,28 @@ rc_startup_dir = Path("/jffs/etc/rc_startup.d")
 
 # fmt: off
 nvram_config = {
-    "wl0_mode":          "sta",
+    "wl0_mode":          "sta",         # Station mode, unbridged. DD-WRT treats eth1
+    "eth1_bridged":      "0",           # (2.4ghz wifi) as the WAN interface and
+    "wan_proto":         "dhcp",        # acquires the management ip with DHCP.
+
+    "wl0_gmode":         "2",           # mixed network mode
+    "wl0_nmode":         "2",
     "wl0_net_mode":      "mixed",
-    "wl0_ssid":          house_ssid,
+
+    "wl0_ssid":          house_ssid,    # set up connection to house wifi
     "wl0_security_mode": "psk2",
     "wl0_akm":           "psk2",
     "wl0_crypto":        "aes",
     "wl0_wpa_psk":       house_wifi_password,
     "wl0_wpa_gtk_rekey": "3600",
-    "eth1_bridged":      "0",
-    "wan_proto":         "dhcp",
-    "wl0_gmode":         "2",
-    "wl0_nmode":         "2",
-    "probe_blacklist":   "vlan1",
-    "dnsmasq_enable":    "0",
-    "syslogd_rem_ip":    syslog_server,
+
+    "syslogd_rem_ip":    syslog_server, # configure syslog and ntp
     "syslogd_enable":    "1",
     "ntp_enable":        "1",
     "ntp_server":        " ".join(ntp_servers),
+
+    "dnsmasq_enable":    "0",           # we're never acting as a dhcp server
+    "probe_blacklist":   "vlan1",
     "wl0_afterburner":   "off",
     "arp_spoofing":      "0",
     "block_ident":       "0",
@@ -35,17 +39,16 @@ nvram_config = {
     "sfe":               "2",
     "ctf_disable":       "0",
     "block_wan":         "0",
-    "shownf":            "0",
-    "fw_disable":        "1",
-    # dd-wrt builds its standard WAN/firewall ruleset (treating eth2 as a
-    # WAN face, blocking remote admin ports, etc.) AFTER rc_startup runs,
-    # so flushing it from configure-transit-link.sh doesn't stick. This is
-    # the one firmware hook ("Firewall" script, Administration > Commands)
-    # that runs after that ruleset is built.
+    "shownf":            "0",           # disable new features panel in web ui
+    "fw_disable":        "1",           # one of many attempts to disable firewall...
+
+    # ...but it turns out that we need to flush this manually.
     "rc_firewall":       "iptables -F\niptables -t nat -F",
+
     # Space-separated list of vlans that will be trunked over the wireless
     # backhaul.
     "trunk_vlans":       "101 102",
+
     # Run startup scripts.
     "rc_startup":        f"run-parts {rc_startup_dir}",
 }
