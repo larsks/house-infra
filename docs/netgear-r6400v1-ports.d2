@@ -1,0 +1,46 @@
+classes: {
+  lan-port: {
+    shape: rectangle
+    style: {
+      stroke: black
+      fill: lightblue
+    }
+  }
+  wifi-port: {
+    shape: rectangle
+    style: {
+      stroke: black
+      fill: lightgreen
+    }
+  }
+  cpu-port: {
+    shape: rectangle
+    style: {
+      stroke: black
+      fill: darkorange
+    }
+  }
+}
+
+switch: Switch ports {
+  lan1: LAN 1 {class: lan-port}
+  lan2: LAN 2 {class: lan-port}
+  lan3: LAN 3 {class: lan-port}
+  lan4: LAN 4 {class: lan-port}
+  wan: WAN {class: lan-port}
+}
+
+eth0: eth0 {class: cpu-port}
+eth1: eth1 (2.4ghz) {class: wifi-port}
+eth2: eth2 (5ghz) {class: wifi-port}
+cpu: CPU {shape: rectangle}
+
+eth0 -- cpu
+eth1 -- cpu
+eth2 -- cpu
+
+switch.lan1 -- cpu
+switch.lan2 -- cpu
+switch.lan3 -- cpu
+switch.lan4 -- cpu
+switch.wan -- cpu
