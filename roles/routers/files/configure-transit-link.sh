@@ -26,17 +26,30 @@ addr() {
   echo "$1" | cut -f1 -d/
 }
 
+mark() {
+  echo "=== START $* ==="
+  "$@"
+  echo "=== END $* ==="
+  echo
+}
+
+dump_config() {
+  mark brctl show
+  mark ip addr show
+  mark ip route show
+  mark iptables -S
+  mark iptables -t nat -S
+}
+
 if [ -z "$HOSTNAME" ]; then
   echo "ERROR: HOSTNAME is not set" >&2
   exit 1
 fi
 
 if echo "$HOSTNAME" | grep -q backhaul-1; then
-  VLAN1=10.18.25.1/29
   LOCAL=100.64.64.1/29
   REMOTE=100.64.64.2/29
 elif echo "$HOSTNAME" | grep -q backhaul-2; then
-  VLAN1=10.18.25.2/29
   LOCAL=100.64.64.2/29
   REMOTE=100.64.64.1/29
 else
@@ -54,21 +67,8 @@ swconfig dev switch0 set enable_jumbo 1
 swconfig dev switch0 set enable_vlan 1
 swconfig dev switch0 set apply
 
-ip link show vlan1 | grep -q 'master br0' &&
-  ip link set nomaster vlan1
+dump_config >/tmp/network.before
 
-ip addr show br0 | grep 'inet ' &&
-  ip addr flush br0
-
-ip addr show vlan1 | grep -q $VLAN1 ||
-  ip addr add $VLAN1 dev vlan1
-
-# eth2 is normally given its address via the firmware's own
-# wan_proto=static/wan_ipaddr handling, since it's a Wireless Client
-# (sta) radio that dd-wrt treats as WAN. With the br0 WET radio also
-# active, dd-wrt's "which client radio is WAN" bookkeeping gets
-# confused and this address assignment stops happening reliably, so
-# apply it ourselves instead.
 ip addr show eth2 | grep -q "$LOCAL" ||
   ip addr add "$LOCAL" dev eth2
 
@@ -93,12 +93,4 @@ ip link show eth0 | grep -q 'master trunk0' || {
 
 ip link set transit up
 
-# br0 is left to the firmware (vlan2/eth2/eth1 -- whatever dd-wrt puts
-# there, including the WET client-bridge radio); give it a persistent
-# DHCP client against our own event script, since /tmp/udhcpc (dd-wrt's
-# default, used for its own WAN flow) does not exist for an interface
-# we're driving ourselves, and a one-shot `udhcpc -q` never renews.
-BR0_DHCP_PID=$(cat /var/run/udhcpc.br0.pid 2>/dev/null)
-if [ -z "$BR0_DHCP_PID" ] || ! kill -0 "$BR0_DHCP_PID" 2>/dev/null; then
-  udhcpc -i br0 -s /jffs/scripts/udhcpc-br0.sh -b -p /var/run/udhcpc.br0.pid
-fi
+dump_config >/tmp/network.after

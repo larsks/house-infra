@@ -10,23 +10,16 @@ remote_scripts_dir = Path("/jffs/scripts")
 remote_rc_startup_dir = host.data.rc_startup_dir
 
 nvram.set_nvram("router_name", host.name)
-nvram.set_nvram_multi(host.data.nvram_config, name="Set wifi backhaul nvram config")
+nvram.set_nvram_multi(
+    host.data.nvram_config | host.data.host_nvram_config,
+    name="Set wifi backhaul nvram config",
+)
 snmp.apply()
 
 directories = (
     (remote_scripts_dir, "0755"),
     (remote_rc_startup_dir, "0755"),
 )
-
-
-def refresh_udhcpc(changed):
-    server.shell(
-        name="Refresh udhcpc",
-        commands=[
-            "kill -USR1 $(cat /var/run/udhcpc.br0.pid)",
-        ],
-        _if=changed,
-    )
 
 
 scripts = (
@@ -54,15 +47,12 @@ scripts = (
         "0755",
         None,
     ),
-    (
-        files_dir / "udhcpc-br0.sh",
-        remote_scripts_dir / "udhcpc-br0.sh",
-        "0755",
-        refresh_udhcpc,
-    ),
 )
 
-files_to_delete = (remote_scripts_dir / "configure-transit-link.sh",)
+files_to_delete = (
+    remote_scripts_dir / "configure-transit-link.sh",
+    remote_scripts_dir / "udhcpc-br0.sh",
+)
 
 for path, mode in directories:
     files.directory(
