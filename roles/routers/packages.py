@@ -4,6 +4,8 @@ packages = (
     "ip-bridge",
     "ip-full",
     "lldpd",
+    "lua",
+    "luaposix",
 )
 
 

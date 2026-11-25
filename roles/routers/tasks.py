@@ -14,13 +14,11 @@ nvram.set_nvram_multi(
     host.data.nvram_config | host.data.host_nvram_config,
     name="Set wifi backhaul nvram config",
 )
-snmp.apply()
 
 directories = (
     (remote_scripts_dir, "0755"),
     (remote_rc_startup_dir, "0755"),
 )
-
 
 scripts = (
     (
@@ -86,7 +84,12 @@ for path in files_to_delete:
         present=False,
     )
 
+# Installed before snmp.apply() below restarts snmpd, since that
+# restart execs snmp-wireless-stats.lua and needs lua/luaposix
+# already in place.
 packages.apply()
+
+snmp.apply()
 
 if not host.data.get("skip_reboot"):
     server.reboot(
