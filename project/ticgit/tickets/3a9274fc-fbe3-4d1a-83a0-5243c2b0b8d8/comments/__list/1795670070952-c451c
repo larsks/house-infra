@@ -1,0 +1,1 @@
+{"author":"lars@oddbit.com","body":"In order to handle authentication to openbao we need some sort of idp. I would normally reach for Keycloak, but gemini suggests looking at Authelia (https://www.authelia.com/) or Issuary (https://github.com/tinyrack-net/issuary)."}
