@@ -4,6 +4,7 @@ from lib.secrets import read_secret
 data = {
     "_sudo": True,
     "address": "192.168.1.1/24",
+    "ddns_hostname": "house.dyn.oddbit.com",
     "ubnt_encrypted_password": read_secret(
         "house/gw.house/users/ubnt", key="encryptedPassword"
     ),

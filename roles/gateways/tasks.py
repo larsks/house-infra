@@ -2,13 +2,14 @@ from pathlib import Path
 
 from pyinfra.operations import files, server
 
-from roles.gateways import acme
+from roles.gateways import acme, ddns
 from roles.gateways.filters import EdgerouterFilters
 
 template_dir = Path(__file__).parent / "templates"
 script_dir = Path(__file__).parent / "scripts"
 
 acme.apply()
+ddns.apply()
 
 config = files.template(
     name="Generate configuration from template",
