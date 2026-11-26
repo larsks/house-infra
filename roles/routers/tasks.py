@@ -22,6 +22,12 @@ directories = (
 
 scripts = (
     (
+        files_dir / "clear-blocklist.sh",
+        remote_rc_startup_dir / "clear-blocklist.sh",
+        "0755",
+        None,
+    ),
+    (
         files_dir / "configure-root-profile.sh",
         remote_rc_startup_dir / "configure-root-profile.sh",
         "0755",
