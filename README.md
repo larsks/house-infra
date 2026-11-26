@@ -22,38 +22,59 @@ connects to a [Netgear Orbi R750] with two satellites, which provide WiFi access
 There is a second HPE 1920 switch in the upstairs work room named `office-sw-3` that provides physical connectivity to devices in that room. A pair of [Netgear R6400v1] routers are used to create a wireless backhaul between `office-sw-2` and `office-sw-3`:
 
 - Router `backhaul-1` is located upstairs, where it connects to `office-sw-3`. `backhaul-1` is configured as a 5ghz access point.
-- Router `backhaul-2` is located downstairs, where it connects to `office-sw-2`. `backhaul-2` is configured as a 5ghz station bridge.
+- Router `backhaul-2` is located downstairs, where it connects to `office-sw-2`. `backhaul-2` is configured as a 5ghz station.
 
 A [VXLAN] channel between the two routers carries VLANs 101 and 102 between the two switches.
 
-The bridge configuration on the routers looks like this:
+The network configuration on the routers looks like this:
 
-| bridge name | bridge id         | STP enabled | interfaces    |
-| ----------- | ----------------- | ----------- | ------------- |
-| br0         | 8000.10da438fdfa3 | no          | eth1          |
-| trunk0      | 8000.10da438fdfa1 | no          | eth0, transit |
+Bridges:
+
+- `br0` carries only `vlan1`. This is managed by DD-WRT.
+- `trunk0` connects `eth0` (the CPU port) with `transit` (the vxlan channel)
+
+Unbridged interfaces:
 
 - `eth1` is the 2.4ghz wireless interface, which is attached to the house wifi network for management access and exporting logs/emtrics.
-- `eth2` is the 5ghz network interface and the transit network link on the `100.64.64.0/29` network
-- `eth0` is the CPU port.
-- `br0` wraps `eth1`
-- `trunk0` connects the LAN port with the VXLAN channel
+- `eth2` is the 5ghz network interface and the transit link on the `100.64.64.0/29` network
 
 For reference purposes, the interface configuration on `backhaul-1` looks like this:
 
 ```sh
-1: lo    inet 127.0.0.1/8 brd 127.255.255.255 scope host lo\       valid_lft forever preferred_lft forever
-1: lo    inet6 ::1/128 scope host \       valid_lft forever preferred_lft forever
-4: eth0    inet6 fe80::12da:43ff:fe8f:ab66/64 scope link \       valid_lft forever preferred_lft forever
-5: vlan1    inet 10.18.25.1/29 scope global vlan1\       valid_lft forever preferred_lft forever
-5: vlan1    inet6 fe80::12da:43ff:fe8f:ab66/64 scope link \       valid_lft forever preferred_lft forever
-7: eth1    inet6 fe80::12da:43ff:fe8f:ab68/64 scope link \       valid_lft forever preferred_lft forever
-8: eth2    inet 100.64.64.1/29 brd 100.64.64.7 scope global eth2\       valid_lft forever preferred_lft forever
-8: eth2    inet6 fe80::12da:43ff:fe8f:ab79/64 scope link \       valid_lft forever preferred_lft forever
-9: br0    inet 192.168.1.127/24 scope global br0\       valid_lft forever preferred_lft forever
-9: br0    inet6 2600:4040:5f6d:500:12da:43ff:fe8f:ab68/64 scope global dynamic flags 100 \       valid_lft 85962sec preferred_lft 13962sec
-10: trunk0    inet6 fe80::58f4:e1ff:fe9b:654a/64 scope link \       valid_lft forever preferred_lft forever
-11: transit    inet6 fe80::c811:d2ff:fe8f:8531/64 scope link \       valid_lft forever preferred_lft forever
+backhaul-1 ~ # brctl show
+bridge name bridge id         STP enabled interfaces
+br0         8000.10da438fab68 no          vlan1
+trunk0      8000.10da438fab66 no          eth0
+                                          transit
+backhaul-1 ~ # ip addr
+1: lo: <LOOPBACK,MULTICAST,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 brd 127.255.255.255 scope host lo
+       valid_lft forever preferred_lft forever
+2: teql0: <NOARP> mtu 1500 qdisc noop state DOWN group default qlen 100
+    link/void
+3: ctf0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether 00:23:6a:00:00:00 brd ff:ff:ff:ff:ff:ff
+4: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel master trunk0 state UNKNOWN group default qlen 1000
+    link/ether 10:da:43:8f:ab:66 brd ff:ff:ff:ff:ff:ff
+5: vlan1@eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br0 state UP group default qlen 1000
+    link/ether 10:da:43:8f:ab:66 brd ff:ff:ff:ff:ff:ff
+7: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UNKNOWN group default qlen 1000
+    link/ether 10:da:43:8f:ab:68 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.127/24 brd 192.168.1.255 scope global eth1
+       valid_lft forever preferred_lft forever
+8: eth2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1600 qdisc fq_codel state UNKNOWN group default qlen 1000
+    link/ether 10:da:43:8f:ab:79 brd ff:ff:ff:ff:ff:ff
+    inet 100.64.64.1/29 brd 100.64.64.7 scope global eth2
+       valid_lft forever preferred_lft forever
+9: br0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 10:da:43:8f:ab:68 brd ff:ff:ff:ff:ff:ff
+    inet 10.18.25.1/29 brd 10.18.25.7 scope global br0
+       valid_lft forever preferred_lft forever
+10: trunk0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 10:da:43:8f:ab:66 brd ff:ff:ff:ff:ff:ff
+11: transit: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master trunk0 state UNKNOWN group default qlen 1000
+    link/ether ba:4b:b0:7e:32:da brd ff:ff:ff:ff:ff:ff
 ```
 
 The configuration on `backhaul-2` is identical but for different addresses.
