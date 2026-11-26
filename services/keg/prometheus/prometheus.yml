@@ -32,14 +32,7 @@ scrape_configs:
           - "office-sw-2.house:9100"
     # netclass is excluded: it walks every interface on the switch (34 of
     # them) doing dozens of small sysfs reads each, which takes ~1s per
-    # scrape on the switch's slow single-core CPU and was causing periodic
-    # load spikes unrelated to actual traffic.
-    #
-    # Note: the param key must be "collect", not "collect[]" -- Prometheus
-    # sends the YAML key verbatim as the query param name (repeated once per
-    # list item), and this exporter's ucode script only recognizes a param
-    # literally named "collect". "collect[]" is silently ignored, which
-    # means every collector (including netclass) runs regardless.
+    # scrape on the switch's slow single-core CPU.
     params:
       collect:
         - conntrack
@@ -81,7 +74,12 @@ scrape_configs:
           - "gw.house"
     params:
       auth: ["public_v2"]
-      module: ["system", "layer2", "layer3", "ethernet", "host"]
+      module:
+        - system
+        - layer2
+        - layer3
+        - ethernet
+        - host
     metrics_path: /snmp
     relabel_configs:
       - source_labels: [__address__]
@@ -98,7 +96,10 @@ scrape_configs:
           - "backhaul-2.house"
     params:
       auth: ["public_v2"]
-      module: ["system", "layer2", "wireless"]
+      module:
+        - system
+        - layer2
+        - wireless
     metrics_path: /snmp
     relabel_configs:
       - source_labels: [__address__]
