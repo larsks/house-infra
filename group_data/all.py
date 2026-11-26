@@ -9,3 +9,6 @@ dns_servers = [
 wireguard_listen_port = 51820
 snmp_ro_community = "monitor"
 house_ssid = "vks-1"
+
+# where to find acme.sh ACME client
+acme_repo_url = "https://github.com/acmesh-official/acme.sh"

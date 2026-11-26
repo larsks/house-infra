@@ -4,7 +4,9 @@ from lib.secrets import read_secret
 data = {
     "_sudo": True,
     "address": "192.168.1.1/24",
-    "ubnt_encrypted_password": read_secret("house/gw.house/users/ubnt"),
+    "ubnt_encrypted_password": read_secret(
+        "house/gw.house/users/ubnt", key="encryptedPassword"
+    ),
     "remote_syslog": {
         "enabled": True,
         "loghost": syslog_server,
@@ -93,7 +95,7 @@ data = {
                     "service": "noip",
                     "hostname": "oddbit.hopto.org",
                     "login": "lars@oddbit.com",
-                    "password": read_secret("house/gw.house/noip_ddns_key"),
+                    "password": read_secret("house/gw.house/ddns_noip", key="oddbit"),
                     "server": "dynupdate.no-ip.com",
                 }
             ],

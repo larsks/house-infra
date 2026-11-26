@@ -2,6 +2,9 @@ from pyinfra import host, local
 
 from globals import roles_dir
 
+if host.name == "@local":
+    local.include(str(roles_dir / "local" / "tasks.py"))
+
 if "gateways" in host.groups:
     local.include(str(roles_dir / "gateways" / "tasks.py"))
 

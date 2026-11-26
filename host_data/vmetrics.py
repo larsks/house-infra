@@ -8,7 +8,7 @@ data = {
             "listen_port": 51820,
             "address": "192.168.5.10/24",
             "private_key": read_secret(
-                "vmetrics.oddbit.com/wireguard/house_private_key"
+                "house/vmetrics/wireguard/house_vpn", key="privateKey"
             ),
             "peers": [
                 {

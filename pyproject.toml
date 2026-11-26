@@ -2,7 +2,11 @@
 name = "infra"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = ["lxml>=6.1.3", "pyinfra>=3.11.2"]
+dependencies = [
+    "hvac>=2.4.0",
+    "lxml>=6.1.3",
+    "pyinfra>=3.11.2",
+]
 
 # pyinfra adds the `infra` directory to sys.path, so siblings like `roles`
 # and `globals` import as top-level modules rather than relative to a

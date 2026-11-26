@@ -5,7 +5,7 @@ from group_data.all import house_ssid, ntp_servers, syslog_server
 from lib.secrets import read_secret
 
 ssh_config_file = str(roles_dir / "routers" / "files" / "ssh_config")
-house_wifi_password = read_secret("house/wifi/vks-1/password")
+house_wifi_password = read_secret("house/wifi/vks-1", key="passphrase")
 rc_startup_dir = Path("/jffs/etc/rc_startup.d")
 
 # fmt: off
