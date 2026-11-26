@@ -16,6 +16,8 @@ digraph {
     vector [color=lightblue, fillcolor=lightblue]
     loki [color=lightblue, fillcolor=lightblue]
     victoriametrics [color=orange]
+    garage [color=lightgrey, fillcolor=lightgrey]
+    openbao [color=lightgrey, fillcolor=lightgrey]
 
     # external services
     pushover [shape=house, color=red, fillcolor=red]
@@ -28,6 +30,7 @@ digraph {
     "step-ca" -> traefik
     alertmanager -> traefik
     garage -> traefik
+    openbao -> traefik
     perses -> traefik
     prometheus -> traefik
     loki -> traefik

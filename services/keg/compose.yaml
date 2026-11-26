@@ -16,6 +16,7 @@ include:
   - toolbox/compose.yaml
   - traefik/compose.yaml
   - vector/compose.yaml
+  - openbao/compose.yaml
 
 networks:
   services:

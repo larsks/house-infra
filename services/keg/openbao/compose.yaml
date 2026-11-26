@@ -1,0 +1,26 @@
+volumes:
+  openbao-data:
+
+services:
+  openbao:
+    build:
+      context: .
+      dockerfile: Containerfile
+    command:
+      - server
+    mem_swappiness: 0
+    volumes:
+      - openbao-data:/openbao/data
+    networks:
+      - services
+    restart: unless-stopped
+    depends_on:
+      traefik:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.openbao.rule=Host(`bao.keg.house`)"
+      - "traefik.http.services.openbao.loadbalancer.server.port=8200"
+      - "traefik.http.routers.openbao.entrypoints=websecure"
+      - "traefik.http.routers.openbao.tls=true"
+      - "traefik.http.routers.openbao.tls.certresolver=step-ca"

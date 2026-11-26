@@ -1,0 +1,3 @@
+FROM ghcr.io/openbao/openbao:2.6
+COPY config.hcl /openbao/config/config.hcl
+RUN mkdir -p /openbao/data && chown openbao:openbao /openbao/data
