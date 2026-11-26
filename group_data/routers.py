@@ -25,6 +25,20 @@ nvram_config = {
     "wl0_wpa_psk":       house_wifi_password,
     "wl0_wpa_gtk_rekey": "3600",
 
+    "wl1_net_mode":      "acn-mixed",
+    "wl1_gmode":         "1",
+    "wl1_nmode":         "2",
+    "wl1_txpwruser":     "0",
+    "wl1_txpower":       "71",
+    "wl1_bw":            "80",
+    "wl1_nbw_cap":       "3",
+    "wl1_chanspec":      "149/80",
+    "wl1_channel":       "149",
+    "wl1_nbw":           "80",         # not derived correctly for sta-mode radios at
+    "wl1_nctrlsb":       "ll",         # boot; set explicitly so chanspec negotiation works
+
+    "wl_mode":           "sta",         # apparently a fallback value
+
     "syslogd_rem_ip":    syslog_server, # configure syslog and ntp
     "syslogd_enable":    "1",
     "ntp_enable":        "1",
