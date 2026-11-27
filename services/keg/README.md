@@ -56,3 +56,9 @@
   [Garage](https://garagehq.deuxfleurs.fr/) provides an S3 object storage
   interface to the DiskStation. The S3 API is used as a backup target by other
   devices in the house.
+
+- `openbao`
+
+  [OpenBao](https://openbao.org/) is the open source fork of Hashicorp Vault.
+  It is a secret storage engine that allows us to securely store and retrieve
+  secrets.
