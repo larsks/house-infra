@@ -17,3 +17,14 @@ resource "vault_policy" "house_secret_reader" {
     }
   EOT
 }
+
+resource "vault_auth_backend" "keg_containers" {
+  type = "approle"
+  path = "keg"
+}
+
+resource "vault_approle_auth_backend_role" "keg_containers" {
+  backend        = vault_auth_backend.keg_containers.path
+  role_name      = "house_secret_reader"
+  token_policies = [vault_policy.house_secret_reader.name]
+}
