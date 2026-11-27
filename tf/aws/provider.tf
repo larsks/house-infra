@@ -18,14 +18,14 @@ provider "vault" {
 provider "aws" {
   region = "us-east-1"
 
-  # This applies the "managed-by: oddbit" tag to all resources created by this
+  # This applies the "managed-by:" tag to all resources created by this
   # repository. This is useful in e.g. resource explorer queries to identify
   # unmanaged resources.
   #
-  # aws resource-explorer-2 search --query-string='-tag:managed-by=oddbit'
+  # aws resource-explorer-2 search --query-string='-tag:managed-by=...'
   default_tags {
     tags = {
-      managed-by = "oddbit"
+      managed-by = "house.oddbit.com"
     }
   }
 }
