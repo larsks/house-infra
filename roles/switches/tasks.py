@@ -11,6 +11,8 @@ apk.packages(
     packages=[
         "dnsmasq",
         "lldpd",
+        "prometheus-node-exporter-ucode",
+        "prometheus-node-exporter-ucode-openwrt",
     ],
 )
 
@@ -24,7 +26,7 @@ for section in [
 ]:
     result = files.template(
         name=f"Update {section} configration",
-        src=template_dir / f"{section}.uci",
+        src=str(template_dir / f"{section}.uci"),
         dest=f"/etc/config/{section}",
         jinja_env_kwargs={
             "trim_blocks": True,
