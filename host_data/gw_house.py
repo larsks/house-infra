@@ -57,6 +57,11 @@ data = {
             "macaddress": "d8:94:03:9e:05:f7",
         },
         {
+            "name": "office-sw-3",
+            "ipaddress": "192.168.1.251",
+            "macaddress": "d8:94:03:9e:43:d7",
+        },
+        {
             "name": "orbi",
             "ipaddress": "192.168.1.5",
             "macaddress": "c8:9e:43:67:35:39",
