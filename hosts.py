@@ -1,4 +1,12 @@
-from host_data import backhaul_1, backhaul_2, gw_house, keg, office_sw_2, vmetrics
+from host_data import (
+    backhaul_1,
+    backhaul_2,
+    gw_house,
+    keg,
+    office_sw_2,
+    office_sw_3,
+    vmetrics,
+)
 
 gateways = [
     ("gw.house", gw_house.data),
@@ -11,6 +19,7 @@ routers = [
 
 switches = [
     ("office-sw-2.house", office_sw_2.data),
+    ("office-sw-3.house", office_sw_3.data),
 ]
 
 diskstations = [

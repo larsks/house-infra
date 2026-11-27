@@ -30,6 +30,7 @@ scrape_configs:
     static_configs:
       - targets:
           - "office-sw-2.house:9100"
+          - "office-sw-3.house:9100"
     # netclass is excluded: it walks every interface on the switch (34 of
     # them) doing dozens of small sysfs reads each, which takes ~1s per
     # scrape on the switch's slow single-core CPU.
